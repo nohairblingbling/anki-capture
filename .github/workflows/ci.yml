@@ -14,5 +14,5 @@ jobs:
         run: python3 scripts/check-localizations.py
       - name: Test shared core
         run: swift test
-      - name: Build and verify desktop app
-        run: scripts/build-app.sh
+      - name: Package and verify universal macOS release
+        run: scripts/package-release.sh
