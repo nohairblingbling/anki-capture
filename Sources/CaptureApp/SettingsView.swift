@@ -80,6 +80,10 @@ struct SettingsView: View {
                         .accessibilityHint("立即生效，隐藏后可从菜单栏打开窗口。")
                 }
                 Section("收录到 Anki") {
+                    AnkiConnectionStatus(diagnostic: model.diagnostics.last { $0.name == "AnkiConnect" },
+                                         checking: model.checking) {
+                        Task { await model.checkConnections() }
+                    }
                     if !model.decks.isEmpty {
                         Picker("目标牌组", selection: $draft.deck) {
                             Text("请选择").tag("")
@@ -96,15 +100,18 @@ struct SettingsView: View {
                         }
                     }.accessibilityLabel("生成后直接加入牌组")
                         .accessibilityHint("关闭后，生成的字卡需要先预览确认。")
-                    DisclosureGroup("Anki 连接与安装帮助") {
+                    DisclosureGroup("Anki 连接帮助") {
                         VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Button(LocalizedStringKey(model.checking ? "正在检查…" : "刷新牌组与连接")) { Task { await model.checkConnections() } }
-                                    .disabled(model.checking)
-                                Link("安装 AnkiConnect", destination: URL(string: "https://ankiweb.net/shared/info/2055492159")!)
+                            if let diagnostic = model.diagnostics.last(where: { $0.name == "AnkiConnect" }), !diagnostic.ok {
+                                Text(verbatim: L10n.text(diagnostic.detail))
+                                    .font(.caption).foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
                             }
-                            Text("Anki → 工具 → 插件 → 获取插件，输入 2055492159，安装后重启 Anki。")
+                            Text("已安装 AnkiConnect 时，请保持 Anki 打开，再刷新连接。")
                                 .font(.caption).foregroundStyle(.secondary)
+                            Text("尚未安装时：在 Anki → 工具 → 插件 → 获取插件中输入 2055492159，安装后重启 Anki。")
+                                .font(.caption).foregroundStyle(.secondary)
+                            Link("AnkiConnect 安装页面", destination: URL(string: "https://ankiweb.net/shared/info/2055492159")!)
                         }.padding(.vertical, 8)
                     }
                 }
@@ -133,6 +140,7 @@ struct SettingsView: View {
                     }
                 }
             }.formStyle(.grouped).scrollContentBackground(.hidden)
+                .disclosureGroupStyle(FullRowDisclosureStyle())
                 .frame(maxWidth: 800).frame(maxWidth: .infinity)
             Divider()
             HStack {
@@ -178,6 +186,44 @@ struct SettingsView: View {
         config.explanationLanguage = draft.explanationLanguage
         config.learningPreferences = draft.learningPreferences
         return config
+    }
+}
+
+private struct AnkiConnectionStatus: View {
+    let diagnostic: DiagnosticItem?
+    let checking: Bool
+    let refresh: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            VStack(alignment: .leading, spacing: 6) {
+                if checking {
+                    HStack(spacing: 8) {
+                        ProgressView().controlSize(.small)
+                        Text("正在检查 Anki…").font(.callout.weight(.medium))
+                    }.accessibilityElement(children: .combine)
+                } else if let diagnostic {
+                    Label(LocalizedStringKey(diagnostic.ok ? "Anki 已连接" : "Anki 尚未连接"),
+                          systemImage: diagnostic.ok ? "checkmark.circle.fill" : "exclamationmark.circle")
+                        .font(.callout.weight(.medium))
+                        .foregroundStyle(diagnostic.ok ? Color.green : Color.orange)
+                        .accessibilityIdentifier("anki.connection.status")
+                    Text(LocalizedStringKey(diagnostic.ok ? "牌组列表已更新，可以选择或新建牌组。" : "请打开 Anki，并确认 AnkiConnect 已启用，再刷新连接。"))
+                        .font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Label("尚未检查 Anki 连接", systemImage: "questionmark.circle")
+                        .font(.callout.weight(.medium)).foregroundStyle(.secondary)
+                    Text("刷新连接以检查 Anki 并更新牌组列表。")
+                        .font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 0)
+            Button("刷新连接", action: refresh)
+                .disabled(checking)
+                .accessibilityIdentifier("anki.connection.refresh")
+        }.padding(.vertical, 4)
     }
 }
 

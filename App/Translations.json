@@ -1393,5 +1393,50 @@
     "en": "Create deck…",
     "zh-Hans": "新建牌组…",
     "ja": "デッキを作成…"
+  },
+  "Anki 连接帮助": {
+    "en": "Anki connection help",
+    "zh-Hans": "Anki 连接帮助",
+    "ja": "Anki の接続ヘルプ"
+  },
+  "已安装 AnkiConnect 时，请保持 Anki 打开，再刷新连接。": {
+    "en": "If AnkiConnect is already installed, keep Anki open and refresh the connection.",
+    "zh-Hans": "已安装 AnkiConnect 时，请保持 Anki 打开，再刷新连接。",
+    "ja": "AnkiConnect がインストール済みの場合は、Anki を開いたまま接続を更新してください。"
+  },
+  "尚未安装时：在 Anki → 工具 → 插件 → 获取插件中输入 2055492159，安装后重启 Anki。": {
+    "en": "If AnkiConnect is not installed: in Anki → Tools → Add-ons → Get Add-ons, enter 2055492159, then restart Anki.",
+    "zh-Hans": "尚未安装时：在 Anki → 工具 → 插件 → 获取插件中输入 2055492159，安装后重启 Anki。",
+    "ja": "未インストールの場合：Anki → ツール → アドオン → アドオンを取得で 2055492159 を入力し、インストール後に Anki を再起動します。"
+  },
+  "AnkiConnect 安装页面": {
+    "en": "AnkiConnect setup page",
+    "zh-Hans": "AnkiConnect 安装页面",
+    "ja": "AnkiConnect のインストールページ"
+  },
+  "正在检查 Anki…": {
+    "en": "Checking Anki…",
+    "zh-Hans": "正在检查 Anki…",
+    "ja": "Anki を確認中…"
+  },
+  "牌组列表已更新，可以选择或新建牌组。": {
+    "en": "Deck list updated. Select a deck or create a new one.",
+    "zh-Hans": "牌组列表已更新，可以选择或新建牌组。",
+    "ja": "デッキ一覧を更新しました。デッキの選択または新規作成ができます。"
+  },
+  "请打开 Anki，并确认 AnkiConnect 已启用，再刷新连接。": {
+    "en": "Open Anki, make sure AnkiConnect is enabled, then refresh the connection.",
+    "zh-Hans": "请打开 Anki，并确认 AnkiConnect 已启用，再刷新连接。",
+    "ja": "Anki を開き、AnkiConnect が有効になっていることを確認してから接続を更新してください。"
+  },
+  "尚未检查 Anki 连接": {
+    "en": "Anki connection not checked",
+    "zh-Hans": "尚未检查 Anki 连接",
+    "ja": "Anki の接続は未確認です"
+  },
+  "刷新连接以检查 Anki 并更新牌组列表。": {
+    "en": "Refresh to check Anki and update the deck list.",
+    "zh-Hans": "刷新连接以检查 Anki 并更新牌组列表。",
+    "ja": "接続を更新すると、Anki の接続とデッキ一覧を確認できます。"
   }
 }

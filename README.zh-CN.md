@@ -8,7 +8,7 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
-[下载 Mac 安装包](https://github.com/nohairblingbling/anki-capture/releases/download/v0.5.1/AnkiCapture-0.5.1-macOS-universal.dmg) · [所有版本](https://github.com/nohairblingbling/anki-capture/releases) · [反馈问题](https://github.com/nohairblingbling/anki-capture/issues)
+[下载 Mac 安装包](https://github.com/nohairblingbling/anki-capture/releases/download/v0.5.2/AnkiCapture-0.5.2-macOS-universal.dmg) · [所有版本](https://github.com/nohairblingbling/anki-capture/releases) · [反馈问题](https://github.com/nohairblingbling/anki-capture/issues)
 
 ![macOS](https://img.shields.io/badge/macOS-14%2B-333333?logo=apple)
 ![License](https://img.shields.io/badge/license-MIT-56846A)
@@ -31,7 +31,7 @@
 
 界面支持 **英文、简体中文和日文**，跟随系统明暗，同时提供配套 CLI。
 
-下载 DMG，将 **Anki Capture** 拖到 **Applications（应用程序）** 后打开，无需 Xcode 或编译工具。[发行页](https://github.com/nohairblingbling/anki-capture/releases/tag/v0.5.1)另提供 ZIP 和 SHA-256 校验文件。
+下载 DMG，将 **Anki Capture** 拖到 **Applications（应用程序）** 后打开，无需 Xcode 或编译工具。[发行页](https://github.com/nohairblingbling/anki-capture/releases/tag/v0.5.2)另提供 ZIP 和 SHA-256 校验文件。
 
 需要 macOS 14+、Anki 桌面版、AnkiConnect（插件代码 **2055492159**），以及至少一种支持的 AI CLI。通用构建包含 Apple Silicon 和 Intel 可执行文件；Apple Silicon 已验证，Intel 尚未经真机验证。
 

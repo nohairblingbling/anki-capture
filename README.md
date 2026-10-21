@@ -8,7 +8,7 @@ A native Mac app powered by your own **Codex · Claude Code · Gemini CLI**.
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
-[Download for Mac](https://github.com/nohairblingbling/anki-capture/releases/download/v0.5.1/AnkiCapture-0.5.1-macOS-universal.dmg) · [Releases](https://github.com/nohairblingbling/anki-capture/releases) · [Feedback](https://github.com/nohairblingbling/anki-capture/issues)
+[Download for Mac](https://github.com/nohairblingbling/anki-capture/releases/download/v0.5.2/AnkiCapture-0.5.2-macOS-universal.dmg) · [Releases](https://github.com/nohairblingbling/anki-capture/releases) · [Feedback](https://github.com/nohairblingbling/anki-capture/issues)
 
 ![macOS](https://img.shields.io/badge/macOS-14%2B-333333?logo=apple)
 ![License](https://img.shields.io/badge/license-MIT-56846A)
@@ -31,7 +31,7 @@ Select a word or phrase while reading a paper, web page, or document, then press
 
 The interface supports **English, Simplified Chinese, and Japanese**, follows system light/dark appearance, and includes a companion CLI.
 
-Download the DMG, drag **Anki Capture** to **Applications**, then open it. No Xcode or build tools are needed. A ZIP and SHA-256 checksums are also available in [Releases](https://github.com/nohairblingbling/anki-capture/releases/tag/v0.5.1).
+Download the DMG, drag **Anki Capture** to **Applications**, then open it. No Xcode or build tools are needed. A ZIP and SHA-256 checksums are also available in [Releases](https://github.com/nohairblingbling/anki-capture/releases/tag/v0.5.2).
 
 Requires macOS 14+, Anki Desktop with AnkiConnect (add-on code **2055492159**), and at least one supported AI CLI. The universal build contains Apple Silicon and Intel executables; Apple Silicon is tested, Intel hardware has not been tested yet.
 
