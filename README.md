@@ -26,6 +26,10 @@ scripts/install.sh
 
 构建产物：`dist/Anki Capture.app`。安装到 `~/Applications/Anki Capture.app`，CLI 链接位于 `~/.local/bin/anki-capture`。这是本机开发签名，尚未进行 Apple 公证；修改并重新签名后，系统可能要求重新授予辅助功能权限。
 
+本机有 Apple Development / Developer ID 证书时，可在项目根目录的 `.signing-identity` 中用一行保存证书名称或 SHA-1，供后续构建沿用；此文件由 Git 忽略。也可用 `ANKI_CAPTURE_SIGNING_IDENTITY='证书名称或 SHA-1' scripts/build-app.sh` 临时覆盖。均未指定时使用 ad-hoc 签名，其授权绑定单次构建的代码哈希。更换签名方式后需要重新授权一次；此项目不在 Git 中保存签名私钥或证书文件。
+
+如果系统设置中已开启辅助功能，但 App 仍显示未授权，旧版本的签名记录可能已经失效。可在系统设置中移除旧的 Anki Capture 项目，再添加当前 `~/Applications/Anki Capture.app` 并允许。也可在终端执行 `tccutil reset Accessibility dev.ankicapture.app`，然后在 App 中重新申请并由用户开启授权；此命令只清除本工具的辅助功能授权。单纯关闭再开启旧记录可能无效。
+
 ## CLI
 
 ```bash

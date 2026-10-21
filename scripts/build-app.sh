@@ -15,6 +15,11 @@ if [[ -d "$TASK_APP/KeyboardShortcuts_KeyboardShortcuts.bundle" ]]; then
 fi
 swift scripts/make-icon.swift "$TASK_ROOT/dist"
 iconutil -c icns "$TASK_ROOT/dist/AppIcon.iconset" -o "$TASK_APP/Contents/Resources/AppIcon.icns"
-codesign --force --deep --sign - --identifier dev.ankicapture.app "$TASK_APP"
+TASK_SIGNING_IDENTITY="${ANKI_CAPTURE_SIGNING_IDENTITY:-}"
+if [[ -z "$TASK_SIGNING_IDENTITY" && -f "$TASK_ROOT/.signing-identity" ]]; then
+    IFS= read -r TASK_SIGNING_IDENTITY < "$TASK_ROOT/.signing-identity"
+fi
+TASK_SIGNING_IDENTITY="${TASK_SIGNING_IDENTITY:--}"
+codesign --force --deep --sign "$TASK_SIGNING_IDENTITY" --identifier dev.ankicapture.app "$TASK_APP"
 codesign --verify --deep --strict "$TASK_APP"
 print -r -- "$TASK_APP"
