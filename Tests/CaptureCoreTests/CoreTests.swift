@@ -37,6 +37,70 @@ private let sample = VocabularyCard(term: "salient", lemma: "salient", senseKey:
     #expect((attributes[.posixPermissions] as? NSNumber)?.intValue == 0o600)
 }
 
+@Test func existingConfigurationMigratesWithoutLosingDeckOrPreferences() throws {
+    let original = Data(#"{"provider":"claude","deck":"Existing deck","autoSave":false,"codexPath":"/custom/codex","claudeModel":"opus"}"#.utf8)
+    var config = try JSONDecoder().decode(AppConfiguration.self, from: original)
+    #expect(config.deck == "Existing deck")
+    #expect(config.provider == .claude)
+    #expect(config.model == "opus")
+    #expect(config.codexPath == "/custom/codex")
+    #expect(config.autoSave == false)
+    #expect(config.showInDock == true)
+    config.showInDock = false
+    config.setModel("custom-gemini", for: .gemini)
+    config.setExecutable("/custom/gemini", for: .gemini)
+    let decoded = try JSONDecoder().decode(AppConfiguration.self, from: JSONEncoder().encode(config))
+    #expect(decoded == config)
+    #expect(decoded.executable(for: .gemini) == "/custom/gemini")
+}
+
+@Test func authenticationStatusDoesNotExposeAccountDataOrAssumeSuccess() throws {
+    let anonymous = ProviderConnections.parseAuthentication(provider: .claude, version: "test",
+        result: .init(exitCode: 0, stdout: #"{"loggedIn":false,"email":"private@example.com"}"#, stderr: ""))
+    #expect(anonymous.state == .signedOut)
+    let connected = ProviderConnections.parseAuthentication(provider: .claude, version: "test",
+        result: .init(exitCode: 0, stdout: #"{"loggedIn":true,"authMethod":"claude.ai","email":"private@example.com","apiKey":"secret-test"}"#, stderr: ""))
+    #expect(connected.state == .connected)
+    let encoded = try jsonString(connected)
+    #expect(!encoded.contains("private@example.com"))
+    #expect(!encoded.contains("secret-test"))
+    let failed = ProviderConnections.parseAuthentication(provider: .codex, version: "test",
+        result: .init(exitCode: 1, stdout: "ChatGPT login failed", stderr: ""))
+    #expect(failed.state != .connected)
+}
+
+@Test func geminiEnvelopeAndToolPolicy() throws {
+    let cardJSON = try jsonString(sample)
+    let envelope = try JSONSerialization.data(withJSONObject: ["response": "```json\n" + cardJSON + "\n```", "stats": [:]])
+    let result = try LocalCLIGenerator.decodeEnvelope(String(decoding: envelope, as: UTF8.self), provider: .gemini)
+    #expect(try JSONDecoder().decode(VocabularyCard.self, from: result) == sample)
+    #expect(throws: CaptureError.self) { try LocalCLIGenerator.decodeEnvelope(#"{"error":{"message":"auth failed"},"response":"{}"}"#, provider: .gemini) }
+    let paths = try temporaryPaths()
+    defer { try? FileManager.default.removeItem(at: paths.root) }
+    try LocalCLIGenerator.prepareGeminiWorkspace(paths.runtime)
+    let settings = try JSONSerialization.jsonObject(with: Data(contentsOf: paths.runtime.appendingPathComponent(".gemini/settings.json"))) as! [String: Any]
+    #expect((settings["hooksConfig"] as? [String: Any])?["enabled"] as? Bool == false)
+    #expect(((settings["tools"] as? [String: Any])?["core"] as? [String])?.isEmpty == true)
+    let policy = try String(contentsOf: paths.runtime.appendingPathComponent("deny-tools.toml"), encoding: .utf8)
+    #expect(policy.contains("toolName = \"*\""))
+    #expect(policy.contains("decision = \"deny\""))
+}
+
+@Test func loginCommandTreatsExecutablePathAsOneArgument() async throws {
+    let paths = try temporaryPaths()
+    defer { try? FileManager.default.removeItem(at: paths.root) }
+    let fake = paths.root.appendingPathComponent("cli' $(echo NOT_EXECUTED)")
+    try Data("#!/bin/sh\nprintf 'official-command:%s' \"$1\"\n".utf8).write(to: fake)
+    try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: fake.path)
+    var config = AppConfiguration(); config.codexPath = fake.path
+    let script = try LoginCommand.write(provider: .codex, config: config, paths: paths)
+    let result = try await ProcessRunner.run(executable: "/bin/zsh", arguments: [script.path], directory: paths.runtime, timeout: 3)
+    #expect(result.exitCode == 0)
+    #expect(result.stdout.contains("official-command:login"))
+    #expect(!result.stdout.contains("NOT_EXECUTED"))
+    #expect(!FileManager.default.fileExists(atPath: script.path))
+}
+
 @Test func concurrentEnqueueAndLeaseRecovery() async throws {
     let paths = try temporaryPaths()
     defer { try? FileManager.default.removeItem(at: paths.root) }

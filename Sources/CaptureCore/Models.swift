@@ -13,8 +13,28 @@ public enum CaptureError: LocalizedError {
 }
 
 public enum AIProvider: String, Codable, CaseIterable, Sendable {
-    case codex, claude
-    public var title: String { self == .codex ? "Codex" : "Claude Code" }
+    case codex, claude, gemini
+    public var title: String {
+        switch self { case .codex: "Codex"; case .claude: "Claude Code"; case .gemini: "Gemini" }
+    }
+    public var commandName: String { self == .claude ? "claude" : rawValue }
+    public var loginArguments: [String] {
+        switch self { case .codex: ["login"]; case .claude: ["auth", "login"]; case .gemini: [] }
+    }
+    public var installationURL: URL {
+        switch self {
+        case .codex: URL(string: "https://developers.openai.com/codex/cli")!
+        case .claude: URL(string: "https://code.claude.com/docs/en/setup")!
+        case .gemini: URL(string: "https://geminicli.com/docs/get-started/installation/")!
+        }
+    }
+    public var modelSuggestions: [String] {
+        switch self {
+        case .codex: ExecutableLocator.codexModels()
+        case .claude: ["sonnet", "opus", "haiku"]
+        case .gemini: ["auto", "pro", "flash"]
+        }
+    }
 }
 
 public struct CaptureInput: Codable, Sendable {

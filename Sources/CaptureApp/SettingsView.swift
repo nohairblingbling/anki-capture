@@ -10,6 +10,11 @@ struct SettingsView: View {
     var body: some View {
         VStack(spacing: 0) {
             Form {
+                Section("应用") {
+                    Toggle("在 Dock 中显示图标", isOn: Binding(get: { model.configuration.showInDock }, set: { model.setDockVisibility($0) }))
+                    Text("立即生效。隐藏 Dock 图标后，仍可从菜单栏打开窗口或设置。")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
                 Section("收录到 Anki") {
                     if !model.decks.isEmpty {
                         Picker("目标牌组", selection: $draft.deck) {
@@ -27,25 +32,11 @@ struct SettingsView: View {
                     Text(draft.autoSave ? "后台自动处理，成功后显示提示。" : "生成后先在最近收录中预览、编辑，再确认加入。")
                         .font(.caption).foregroundStyle(.secondary)
                 }
-                Section("本机 AI") {
-                    Picker("使用服务", selection: $draft.provider) {
-                        ForEach(AIProvider.allCases, id: \.self) { Text($0.title).tag($0) }
+                Section("制卡偏好") {
+                    HStack {
+                        LabeledContent("当前服务", value: model.configuration.provider.title)
+                        Button("管理 AI 连接") { model.page = .connections; model.openMainWindow?() }
                     }
-                    if draft.provider == .codex {
-                        Picker("模型候选", selection: $draft.codexModel) {
-                            Text("沿用 CLI 默认模型").tag("")
-                            ForEach(Array(Set(ExecutableLocator.codexModels() + [draft.codexModel])).filter { !$0.isEmpty }.sorted(), id: \.self) { Text($0).tag($0) }
-                        }
-                        TextField("自定义模型 ID（留空沿用默认）", text: $draft.codexModel)
-                    } else {
-                        Picker("模型", selection: $draft.claudeModel) {
-                            Text("CLI 默认模型").tag("")
-                            ForEach(Array(Set(["sonnet", "opus", "haiku", draft.claudeModel])).filter { !$0.isEmpty }.sorted(), id: \.self) { Text($0).tag($0) }
-                        }
-                        TextField("自定义模型 ID", text: $draft.claudeModel)
-                    }
-                    Text("沿用官方 CLI 的登录与计费配置。Codex 候选来自本机缓存；模型权限以实际调用为准。")
-                        .font(.caption).foregroundStyle(.secondary)
                     LabeledContent("制卡说明") { Text("英语词汇 / 短语 → 中文释义与英文例句").foregroundStyle(.secondary) }
                     TextField("额外制卡偏好（可选）", text: $draft.customInstructions, axis: .vertical).lineLimit(2...4)
                 }
@@ -59,8 +50,6 @@ struct SettingsView: View {
                 }
                 Section {
                     DisclosureGroup("高级设置") {
-                        TextField("Codex 可执行文件", text: $draft.codexPath)
-                        TextField("Claude 可执行文件", text: $draft.claudePath)
                         TextField("AnkiConnect 地址", text: $draft.ankiURL)
                         SecureField("AnkiConnect API Key（如有）", text: $draft.ankiAPIKey)
                         TextField("专用笔记类型", text: $draft.noteType)
@@ -74,10 +63,20 @@ struct SettingsView: View {
                 if let error = model.error { Text(error).font(.caption).foregroundStyle(.orange).lineLimit(2) }
                 if saved { Label("设置已保存", systemImage: "checkmark.circle").font(.callout).foregroundStyle(.secondary) }
                 Spacer()
-                Button("保存设置") { model.saveSettings(draft); saved = model.configuration == draft }
+                Button("保存设置") { saved = model.saveSettings(mergedSettings) }
                     .buttonStyle(.borderedProminent).keyboardShortcut("s", modifiers: .command)
             }.padding(18)
         }
         .frame(minWidth: 600, minHeight: 620)
+    }
+    private var mergedSettings: AppConfiguration {
+        // Settings may be open while another window edits a provider. Commit
+        // only the fields this form owns, preserving the latest AI and Dock state.
+        var config = model.configuration
+        config.deck = draft.deck; config.noteType = draft.noteType
+        config.ankiURL = draft.ankiURL; config.ankiAPIKey = draft.ankiAPIKey
+        config.timeoutSeconds = draft.timeoutSeconds; config.autoSave = draft.autoSave
+        config.customInstructions = draft.customInstructions
+        return config
     }
 }

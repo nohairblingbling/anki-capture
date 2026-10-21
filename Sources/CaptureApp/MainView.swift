@@ -8,7 +8,6 @@ struct MainView: View {
     @State private var source = ""
     @State private var preview: CaptureJob?
     @State private var undoJob: CaptureJob?
-    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         HSplitView {
@@ -16,15 +15,6 @@ struct MainView: View {
             historyPane.frame(minWidth: 420)
         }
         .frame(minWidth: 800, minHeight: 590)
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button { Task { await model.checkConnections() } } label: { Label("检查连接", systemImage: "arrow.clockwise") }
-                    .disabled(model.checking)
-            }
-            ToolbarItem(placement: .automatic) {
-                SettingsLink { Label("设置", systemImage: "gearshape") }
-            }
-        }
         .sheet(item: $preview) { job in CardPreview(job: job, model: model) }
         .confirmationDialog("撤销这次添加？", isPresented: Binding(get: { undoJob != nil }, set: { if !$0 { undoJob = nil } }), titleVisibility: .visible) {
             if let job = undoJob {
@@ -32,9 +22,6 @@ struct MainView: View {
             }
             Button("取消", role: .cancel) { undoJob = nil }
         } message: { Text("仅适用于本工具新建、尚无复习记录的字卡。已有卡片不会被删除。") }
-        .alert("操作未完成", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
-            Button("好", role: .cancel) { model.error = nil }
-        } message: { Text(model.error ?? "") }
     }
     private var capturePane: some View {
         ScrollView {
@@ -79,15 +66,16 @@ struct MainView: View {
                     Label(model.configuration.deck.isEmpty ? "请先选择目标牌组" : model.configuration.deck, systemImage: "rectangle.stack")
                     Text("\(model.configuration.provider.title) · \(model.configuration.model.isEmpty ? "CLI 默认模型" : model.configuration.model)")
                         .font(.caption).foregroundStyle(.secondary)
-                    if model.configuration.deck.isEmpty { Button("配置连接与牌组") { openSettings() } }
+                    if model.configuration.deck.isEmpty { Button("配置连接与牌组") { model.page = .settings } }
                 }
                 if !model.diagnostics.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
-                        ForEach(model.diagnostics, id: \.name) { item in
+                        ForEach(model.diagnostics.filter { $0.name == "AnkiConnect" || $0.name == model.configuration.provider.title + " 登录" }, id: \.name) { item in
                             Label(item.name + "：" + item.detail, systemImage: item.ok ? "checkmark.circle.fill" : "circle")
                                 .font(.caption).foregroundStyle(item.ok ? Color.secondary : Color.orange)
                                 .lineLimit(2)
                         }
+                        Button("管理 AI 连接") { model.page = .connections }.font(.caption)
                     }
                 }
             }.padding(28)

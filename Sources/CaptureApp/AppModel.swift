@@ -3,6 +3,17 @@ import Observation
 import AppKit
 import CaptureCore
 
+enum AppPage: String, CaseIterable, Identifiable {
+    case capture, connections, settings
+    var id: String { rawValue }
+    var title: String {
+        switch self { case .capture: "收词"; case .connections: "AI 连接"; case .settings: "偏好设置" }
+    }
+    var symbol: String {
+        switch self { case .capture: "text.badge.plus"; case .connections: "point.3.connected.trianglepath.dotted"; case .settings: "slider.horizontal.3" }
+    }
+}
+
 @MainActor @Observable
 final class AppModel {
     var configuration: AppConfiguration
@@ -12,6 +23,10 @@ final class AppModel {
     var message = "选中一个单词或短语，按快捷键收词。"
     var error: String?
     var checking = false
+    var page: AppPage = .capture
+    var connections: [ProviderConnection] = []
+    var verifyingProviders: Set<AIProvider> = []
+    var openMainWindow: (() -> Void)?
     var permissionGranted = SelectionCapture.isTrusted
     let paths: StoragePaths
     let store: JobStore
@@ -31,6 +46,7 @@ final class AppModel {
     func start() {
         guard !started else { return }
         started = true
+        applyDockPreference()
         HotKeyManager.shared.onCapture = { [weak self] in
             Task { @MainActor in await self?.captureSelected() }
         }
@@ -90,20 +106,63 @@ final class AppModel {
         do { try await store.replaceReviewCard(job.id, card: card); await retry(job) }
         catch { report(error) }
     }
-    func saveSettings(_ draft: AppConfiguration) {
+    @discardableResult func saveSettings(_ draft: AppConfiguration) -> Bool {
         do {
             try draft.save(to: paths)
             configuration = draft
+            applyDockPreference()
             error = nil
             message = "设置已保存。"
             Task { await checkConnections() }
-        } catch { report(error) }
+            return true
+        } catch { report(error); return false }
     }
     func checkConnections() async {
         guard !checking else { return }
         checking = true; defer { checking = false }
-        diagnostics = await Diagnostics.check(config: configuration, paths: paths)
+        connections = await ProviderConnections.checkAll(config: configuration, paths: paths)
+        diagnostics = await Diagnostics.check(config: configuration, paths: paths, connections: connections)
         if let client = try? AnkiClient(config: configuration), let names = try? await client.deckNames() { decks = names }
+    }
+    func applyDockPreference() {
+        let policy: NSApplication.ActivationPolicy = configuration.showInDock ? .regular : .accessory
+        if NSApp.activationPolicy() != policy { NSApp.setActivationPolicy(policy) }
+    }
+    func setDockVisibility(_ visible: Bool) {
+        var config = configuration; config.showInDock = visible; saveSettings(config)
+    }
+    func connection(for provider: AIProvider) -> ProviderConnection? {
+        connections.first { $0.provider == provider }
+    }
+    @discardableResult func saveProvider(_ provider: AIProvider, path: String, model: String, makeDefault: Bool = false) -> Bool {
+        var draft = configuration
+        draft.setExecutable(path.trimmingCharacters(in: .whitespacesAndNewlines), for: provider)
+        draft.setModel(model.trimmingCharacters(in: .whitespacesAndNewlines), for: provider)
+        if makeDefault { draft.provider = provider }
+        return saveSettings(draft)
+    }
+    func login(_ provider: AIProvider) {
+        do {
+            let file = try LoginCommand.write(provider: provider, config: configuration, paths: paths)
+            let terminal = URL(fileURLWithPath: "/System/Applications/Utilities/Terminal.app")
+            NSWorkspace.shared.open([file], withApplicationAt: terminal, configuration: .init()) { _, error in
+                guard error != nil else { return }
+                try? FileManager.default.removeItem(at: file)
+                Task { @MainActor in self.report(CaptureError.process("无法打开终端。可以复制登录命令，在终端中手动执行。")) }
+            }
+            message = "在终端完成 \(provider.title) 登录后，返回 AI 连接页面刷新。"
+        } catch { report(error) }
+    }
+    func verify(_ provider: AIProvider) async {
+        guard !verifyingProviders.contains(provider) else { return }
+        verifyingProviders.insert(provider)
+        defer { verifyingProviders.remove(provider) }
+        let current = configuration
+        let value = await ProviderConnections.verify(provider, config: current, paths: paths)
+        // A result for a previous model/path must not mark newly edited settings ready.
+        guard current.model(for: provider) == configuration.model(for: provider),
+              current.executable(for: provider) == configuration.executable(for: provider) else { return }
+        connections.removeAll { $0.provider == provider }; connections.append(value)
     }
     func openNote(_ job: CaptureJob) async {
         guard let id = job.noteID else { return }

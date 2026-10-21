@@ -9,16 +9,16 @@ public struct ProcessResult: Sendable {
 
 public enum ProcessRunner {
     public static func run(executable: String, arguments: [String], input: String = "",
-                           directory: URL, timeout: Double = 120) async throws -> ProcessResult {
+                           directory: URL, timeout: Double = 120, environmentOverrides: [String: String] = [:]) async throws -> ProcessResult {
         try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
-                do { continuation.resume(returning: try runBlocking(executable: executable, arguments: arguments, input: input, directory: directory, timeout: timeout)) }
+                do { continuation.resume(returning: try runBlocking(executable: executable, arguments: arguments, input: input, directory: directory, timeout: timeout, environmentOverrides: environmentOverrides)) }
                 catch { continuation.resume(throwing: error) }
             }
         }
     }
     private static func runBlocking(executable: String, arguments: [String], input: String,
-                                    directory: URL, timeout: Double) throws -> ProcessResult {
+                                    directory: URL, timeout: Double, environmentOverrides: [String: String]) throws -> ProcessResult {
             guard FileManager.default.isExecutableFile(atPath: executable) else {
                 throw CaptureError.process("找不到可执行的 CLI：\(executable)。请在设置中选择正确路径。")
             }
@@ -42,8 +42,10 @@ public enum ProcessRunner {
             // Preserve official CLI authentication and provider configuration. Never read tokens here.
             var environment = ProcessInfo.processInfo.environment
             let home = FileManager.default.homeDirectoryForCurrentUser.path
-            environment["PATH"] = ["\(home)/.local/bin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", environment["PATH"] ?? ""].joined(separator: ":")
+            environment["PATH"] = [URL(fileURLWithPath: executable).deletingLastPathComponent().path,
+                "\(home)/.local/bin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", environment["PATH"] ?? ""].joined(separator: ":")
             environment["NO_COLOR"] = "1"
+            environment.merge(environmentOverrides) { _, override in override }
             process.environment = environment
             process.standardInput = stdin; process.standardOutput = stdout; process.standardError = stderr
             let finished = DispatchSemaphore(value: 0)
@@ -77,28 +79,14 @@ public struct DiagnosticItem: Codable, Sendable {
 }
 
 public enum Diagnostics {
-    public static func check(config: AppConfiguration, paths: StoragePaths) async -> [DiagnosticItem] {
+    public static func check(config: AppConfiguration, paths: StoragePaths, connections: [ProviderConnection]? = nil) async -> [DiagnosticItem] {
         var items: [DiagnosticItem] = []
-        for provider in AIProvider.allCases {
-            let path = config.executable(for: provider)
-            do {
-                let result = try await ProcessRunner.run(executable: path, arguments: ["--version"], directory: paths.runtime, timeout: 10)
-                items.append(.init(name: provider.title, ok: result.exitCode == 0, detail: result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)))
-                let args = provider == .codex ? ["login", "status"] : ["auth", "status"]
-                let auth = try await ProcessRunner.run(executable: path, arguments: args, directory: paths.runtime, timeout: 10)
-                var detail = "未登录或认证不可用"
-                if provider == .codex {
-                    let text = (auth.stdout + auth.stderr).lowercased()
-                    if text.contains("chatgpt") { detail = "ChatGPT 登录" }
-                    else if text.contains("api key") { detail = "API Key 登录（按 CLI 配置计费）" }
-                    else if auth.exitCode == 0 { detail = "已认证，计费方式由 CLI 配置决定" }
-                } else if let data = auth.stdout.data(using: .utf8),
-                          let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                          object["loggedIn"] as? Bool == true {
-                    detail = "已认证：" + (object["authMethod"] as? String ?? "CLI 配置")
-                }
-                items.append(.init(name: provider.title + " 登录", ok: auth.exitCode == 0, detail: detail))
-            } catch { items.append(.init(name: provider.title, ok: false, detail: error.localizedDescription)) }
+        let statuses: [ProviderConnection]
+        if let connections { statuses = connections }
+        else { statuses = await ProviderConnections.checkAll(config: config, paths: paths) }
+        for status in statuses {
+            items.append(.init(name: status.provider.title, ok: ![.missing, .failed].contains(status.state), detail: status.version.isEmpty ? status.detail : status.version))
+            items.append(.init(name: status.provider.title + " 登录", ok: status.state == .connected, detail: status.detail))
         }
         do {
             let client = try AnkiClient(config: config)

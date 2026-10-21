@@ -32,19 +32,25 @@ public struct LocalCLIGenerator: CardGenerating {
         \(try jsonString(input))
         """
         var args: [String]
-        if provider == .codex {
+        switch provider {
+        case .codex:
             args = ["exec", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only",
                     "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "multi_agent",
                     "-c", "mcp_servers={}", "--output-schema", schema.path, "--output-last-message", result.path]
             if !model.isEmpty { args += ["--model", model] }
             args += ["-"]
-        } else {
+        case .claude:
             args = ["-p", "--output-format", "json", "--json-schema", VocabularyCard.schema,
                     "--tools", "", "--strict-mcp-config", "--mcp-config", "{\"mcpServers\":{}}",
                     "--settings", "{\"disableAllHooks\":true}", "--no-session-persistence"]
             if !model.isEmpty { args += ["--model", model] }
+        case .gemini:
+            args = ["--prompt", "Create the vocabulary card described on stdin. Return only its JSON object.",
+                    "--output-format", "json", "--approval-mode", "plan", "--extensions", "none",
+                    "--allowed-mcp-server-names", "__anki_capture_disabled__", "--admin-policy", schema.deletingLastPathComponent().appendingPathComponent("deny-tools.toml").path]
+            if !model.isEmpty { args += ["--model", model] }
         }
-        return .init(arguments: args, prompt: instructions)
+        return .init(arguments: args, prompt: instructions + (provider == .gemini ? "\nJSON_SCHEMA:\n" + VocabularyCard.schema : ""))
     }
 
     public func generate(input: CaptureInput, provider: AIProvider, model: String, config: AppConfiguration) async throws -> VocabularyCard {
@@ -54,9 +60,11 @@ public struct LocalCLIGenerator: CardGenerating {
         let schema = jobDir.appendingPathComponent("schema.json")
         let output = jobDir.appendingPathComponent("result.json")
         try Data(VocabularyCard.schema.utf8).write(to: schema)
+        if provider == .gemini { try Self.prepareGeminiWorkspace(jobDir) }
         let request = try Self.invocation(input: input, provider: provider, model: model, config: config, schema: schema, result: output)
         let result = try await ProcessRunner.run(executable: config.executable(for: provider), arguments: request.arguments,
-                                                input: request.prompt, directory: jobDir, timeout: config.timeoutSeconds)
+                                                input: request.prompt, directory: jobDir, timeout: config.timeoutSeconds,
+                                                environmentOverrides: provider == .gemini ? ["GEMINI_CLI_NO_RELAUNCH": "1"] : [:])
         guard result.exitCode == 0 else {
             // Do not persist CLI logs: they can contain account information or source text.
             let text = (result.stdout + result.stderr).lowercased()
@@ -71,13 +79,7 @@ public struct LocalCLIGenerator: CardGenerating {
         if provider == .codex {
             guard FileManager.default.fileExists(atPath: output.path) else { throw CaptureError.process("Codex 没有返回字卡 JSON。") }
             data = try Data(contentsOf: output)
-        } else {
-            guard let envelope = try JSONSerialization.jsonObject(with: Data(result.stdout.utf8)) as? [String: Any],
-                  envelope["is_error"] as? Bool != true, let value = envelope["structured_output"] else {
-                throw CaptureError.process("Claude Code 没有返回 structured_output。请检查模型、登录或 CLI 版本。")
-            }
-            data = try JSONSerialization.data(withJSONObject: value)
-        }
+        } else { data = try Self.decodeEnvelope(result.stdout, provider: provider) }
         let card: VocabularyCard
         do { card = try JSONDecoder().decode(VocabularyCard.self, from: data).validated() }
         catch { throw CaptureError.invalid("AI 字卡格式不符合要求：\(error.localizedDescription)") }
@@ -86,5 +88,41 @@ public struct LocalCLIGenerator: CardGenerating {
             throw CaptureError.invalid("AI 返回的词条与选中的内容不一致，已保留任务。")
         }
         return card
+    }
+
+    public static func prepareGeminiWorkspace(_ directory: URL) throws {
+        let settings = directory.appendingPathComponent(".gemini", isDirectory: true)
+        try FileManager.default.createDirectory(at: settings, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        let contents = """
+        {"tools":{"core":[],"discoveryCommand":""},"mcp":{"allowed":["__anki_capture_disabled__"]},"hooksConfig":{"enabled":false},"context":{"fileName":[]},"telemetry":{"enabled":false}}
+        """
+        try Data(contents.utf8).write(to: settings.appendingPathComponent("settings.json"))
+        let policy = """
+        [[rule]]
+        toolName = "*"
+        decision = "deny"
+        priority = 999
+        """
+        try Data(policy.utf8).write(to: directory.appendingPathComponent("deny-tools.toml"))
+    }
+
+    public static func decodeEnvelope(_ stdout: String, provider: AIProvider) throws -> Data {
+        guard let envelope = try? JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any] else {
+            throw CaptureError.process("\(provider.title) 没有返回有效的 JSON。请检查 CLI 版本与登录。")
+        }
+        if provider == .claude {
+            guard envelope["is_error"] as? Bool != true, let value = envelope["structured_output"] else {
+                throw CaptureError.process("Claude Code 没有返回 structured_output。请检查模型、登录或 CLI 版本。")
+            }
+            return try JSONSerialization.data(withJSONObject: value)
+        }
+        guard provider == .gemini, envelope["error"] == nil, var response = envelope["response"] as? String else {
+            throw CaptureError.process("\(provider.title) 没有返回字卡内容。请检查登录、额度和模型。")
+        }
+        response = response.trimmingCharacters(in: .whitespacesAndNewlines)
+        if response.hasPrefix("```"), response.hasSuffix("```"), let newline = response.firstIndex(of: "\n") {
+            response = String(response[response.index(after: newline)...].dropLast(3)).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return Data(response.utf8)
     }
 }

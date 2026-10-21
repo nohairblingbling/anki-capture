@@ -10,9 +10,34 @@ struct CommonOptions: ParsableArguments {
 @main
 struct AnkiCaptureCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "anki-capture", abstract: "通过本机 Codex / Claude Code 生成英语字卡并加入 Anki。",
-        version: "0.1.0", subcommands: [Doctor.self, Configure.self, Decks.self, Models.self, Setup.self,
+        commandName: "anki-capture", abstract: "通过本机 Codex / Claude Code / Gemini 生成英语字卡并加入 Anki。",
+        version: "0.2.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
                                       Generate.self, Add.self, Jobs.self, Retry.self, Undo.self, Run.self], defaultSubcommand: Doctor.self)
+}
+
+struct Connections: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(abstract: "检查三个官方 CLI；--verify 会发出一次制卡请求，不写入 Anki。")
+    @OptionGroup var common: CommonOptions
+    @Option(help: "主动验证 codex / claude / gemini，使用该服务保存的模型。") var verify: String?
+    @Option(help: "显示某个服务的官方登录命令。") var loginCommand: String?
+    mutating func run() async throws {
+        let paths = try common.paths
+        let config = try AppConfiguration.load(from: paths)
+        if let loginCommand {
+            let provider = try selectedProvider(loginCommand, fallback: config.provider)
+            let executable = config.executable(for: provider)
+            print(LoginCommand.display(provider: provider, executable: executable.isEmpty ? provider.commandName : executable))
+            return
+        }
+        var statuses = await ProviderConnections.checkAll(config: config, paths: paths)
+        if let verify {
+            let provider = try selectedProvider(verify, fallback: config.provider)
+            let value = await ProviderConnections.verify(provider, config: config, paths: paths)
+            statuses.removeAll { $0.provider == provider }; statuses.append(value)
+            print(try jsonString(statuses))
+            if value.state != .connected { throw ExitCode(2) }
+        } else { print(try jsonString(statuses)) }
+    }
 }
 
 struct Doctor: AsyncParsableCommand {
@@ -40,6 +65,8 @@ struct Configure: ParsableCommand {
     @Option var noteType: String?
     @Option var codexPath: String?
     @Option var claudePath: String?
+    @Option var geminiPath: String?
+    @Option(help: "显示 Dock 图标：true / false") var showInDock: Bool?
     @Option var ankiUrl: String?
     @Flag(help: "生成后等待预览确认。") var preview = false
     @Flag(help: "生成后自动写入 Anki。") var autoSave = false
@@ -47,14 +74,16 @@ struct Configure: ParsableCommand {
         let paths = try common.paths
         var config = try AppConfiguration.load(from: paths)
         if let provider {
-            guard let value = AIProvider(rawValue: provider) else { throw ValidationError("provider 必须为 codex 或 claude。") }
+            guard let value = AIProvider(rawValue: provider) else { throw ValidationError("provider 必须为 codex、claude 或 gemini。") }
             config.provider = value
         }
         if let deck { config.deck = deck }
-        if let model { if config.provider == .codex { config.codexModel = model } else { config.claudeModel = model } }
+        if let model { config.setModel(model, for: config.provider) }
         if let noteType { config.noteType = noteType }
         if let codexPath { config.codexPath = codexPath }
         if let claudePath { config.claudePath = claudePath }
+        if let geminiPath { config.geminiPath = geminiPath }
+        if let showInDock { config.showInDock = showInDock }
         if let ankiUrl { config.ankiURL = ankiUrl }
         guard !(preview && autoSave) else { throw ValidationError("preview 和 auto-save 只能选择一个。") }
         if preview { config.autoSave = false }; if autoSave { config.autoSave = true }
@@ -74,7 +103,7 @@ struct Decks: AsyncParsableCommand {
 struct Models: ParsableCommand {
     static let configuration = CommandConfiguration(abstract: "显示本机 Codex 缓存中的模型候选（实际访问权限需调用验证）。")
     mutating func run() throws {
-        print(try jsonString(["codex_cached": ExecutableLocator.codexModels(), "claude_aliases": ["sonnet", "opus", "haiku"]]))
+        print(try jsonString(["codex_cached": ExecutableLocator.codexModels(), "claude_aliases": AIProvider.claude.modelSuggestions, "gemini_aliases": AIProvider.gemini.modelSuggestions]))
     }
 }
 struct Setup: AsyncParsableCommand {
@@ -102,7 +131,7 @@ struct Generate: AsyncParsableCommand {
         let selected = try selectedProvider(provider, fallback: config.provider)
         let input = try CaptureInput(text: text, context: context, source: source, sourceApp: "CLI")
         let card = try await LocalCLIGenerator(paths: paths).generate(input: input, provider: selected,
-            model: model ?? (selected == .codex ? config.codexModel : config.claudeModel), config: config)
+            model: model ?? config.model(for: selected), config: config)
         print(try jsonString(card))
     }
 }
@@ -122,7 +151,7 @@ struct Add: AsyncParsableCommand {
         var config = try AppConfiguration.load(from: paths)
         if let deck { config.deck = deck }
         config.provider = try selectedProvider(provider, fallback: config.provider)
-        if let model { if config.provider == .codex { config.codexModel = model } else { config.claudeModel = model } }
+        if let model { config.setModel(model, for: config.provider) }
         if preview { config.autoSave = false }
         let term = text ?? String(decoding: FileHandle.standardInput.readDataToEndOfFile(), as: UTF8.self)
         let input = try CaptureInput(text: term, context: context, source: source, sourceApp: "CLI")
@@ -186,6 +215,6 @@ struct Undo: AsyncParsableCommand {
 }
 private func selectedProvider(_ name: String?, fallback: AIProvider) throws -> AIProvider {
     guard let name else { return fallback }
-    guard let provider = AIProvider(rawValue: name) else { throw ValidationError("provider 必须为 codex 或 claude。") }
+    guard let provider = AIProvider(rawValue: name) else { throw ValidationError("provider 必须为 codex、claude 或 gemini。") }
     return provider
 }
