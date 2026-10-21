@@ -1,0 +1,13 @@
+.build/
+.swiftpm/
+dist/
+.DS_Store
+*.xcuserstate
+.env
+*.db
+*.db-shm
+*.db-wal
+*.log
+test-results/
+__pycache__/
+*.pyc
