@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import CaptureCore
 import Carbon
 import Observation
 
@@ -34,11 +35,11 @@ final class HotKeyManager {
             }
             let result = InstallEventHandler(GetApplicationEventTarget(), callback, 1, &eventType,
                                             Unmanaged.passUnretained(self).toOpaque(), &handler)
-            guard result == noErr else { failure = "无法注册快捷键监听（\(result)）。"; return }
+            guard result == noErr else { failure = L10n.format("无法注册快捷键监听（%d）。", result); return }
         }
         let id = EventHotKeyID(signature: OSType(0x41434B59), id: 1)
         let result = RegisterEventHotKey(keyCode, modifiers, id, GetApplicationEventTarget(), 0, &hotKey)
-        if result != noErr { failure = "快捷键可能已被其他应用占用，请重新设置（\(result)）。" }
+        if result != noErr { failure = L10n.format("快捷键可能已被其他应用占用，请重新设置（%d）。", result) }
     }
     func beginRecording() {
         guard !recording else { return }
@@ -81,12 +82,12 @@ struct ShortcutRecorder: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 if showsLabel { Text("选词快捷键"); Spacer() }
-                Button(manager.recording ? "按下快捷键 · Esc 取消" : manager.display) {
+                Button(manager.recording ? L10n.text("按下快捷键 · Esc 取消") : manager.display) {
                     if manager.recording { manager.endRecording() } else { manager.beginRecording() }
                 }.font(.system(.body, design: .monospaced)).accessibilityLabel("设置全局快捷键")
-                    .accessibilityValue(manager.recording ? "正在录制" : manager.display)
+                    .accessibilityValue(manager.recording ? L10n.text("正在录制") : manager.display)
             }
-            if let failure = manager.failure { Text(failure).font(.caption).foregroundStyle(.orange) }
+            if let failure = manager.failure { Text(LocalizedStringKey(failure)).font(.caption).foregroundStyle(.orange) }
         }.onDisappear { if manager.recording { manager.endRecording() } }
     }
 }

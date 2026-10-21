@@ -9,8 +9,8 @@ enum AppStyle {
 }
 
 struct PageHeading: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title).font(.system(size: 24, weight: .semibold))
@@ -22,7 +22,7 @@ struct PageHeading: View {
 }
 
 struct FieldCaption: View {
-    let title: String
+    let title: LocalizedStringKey
     var optional = false
     var body: some View {
         HStack(spacing: 6) {
@@ -37,7 +37,7 @@ struct StatusLabel: View {
     let symbol: String
     var color: Color = .secondary
     var body: some View {
-        Label(title, systemImage: symbol)
+        Label { Text(LocalizedStringKey(title)) } icon: { Image(systemName: symbol) }
             .font(.caption.weight(.medium)).foregroundStyle(color)
             .accessibilityElement(children: .combine)
     }

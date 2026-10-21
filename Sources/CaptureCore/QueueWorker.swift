@@ -15,7 +15,9 @@ public actor QueueWorker {
                 let card: VocabularyCard
                 if let existing = job.card { card = existing }
                 else {
-                    card = try await generator.generate(input: job.input, provider: job.provider, model: job.model, config: config)
+                    var generationConfig = config
+                    generationConfig.explanationLanguage = job.explanationLanguage ?? .chinese
+                    card = try await generator.generate(input: job.input, provider: job.provider, model: job.model, config: generationConfig)
                     try await store.generated(job.id, card: card, review: !job.autoSave)
                     if !job.autoSave { continue }
                 }

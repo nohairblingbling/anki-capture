@@ -48,7 +48,7 @@ public actor JobStore {
         return statement
     }
     private func databaseError() -> CaptureError {
-        .unavailable("任务数据库错误：" + String(cString: sqlite3_errmsg(db)))
+        .unavailable(L10n.format("任务数据库错误：%@", String(cString: sqlite3_errmsg(db))))
     }
     private func query(_ sql: String, _ values: [String] = []) throws -> [CaptureJob] {
         let statement = try prepare(sql, values)
@@ -85,7 +85,8 @@ public actor JobStore {
         let now = Date()
         let job = CaptureJob(id: UUID().uuidString, input: input, deck: config.deck, noteType: config.noteType,
                              provider: config.provider, model: config.model, autoSave: config.autoSave, status: .queued,
-                             createdAt: now, updatedAt: now, attempts: 0)
+                             createdAt: now, updatedAt: now, attempts: 0,
+                             explanationLanguage: config.resolvedExplanationLanguage)
         let payload = String(decoding: try JSONEncoder().encode(job), as: UTF8.self)
         try execute("INSERT INTO jobs(id,fingerprint,payload,status,created_at) VALUES(?,?,?,?,?)",
                     [job.id, fingerprint, payload, job.status.rawValue, String(now.timeIntervalSince1970)])

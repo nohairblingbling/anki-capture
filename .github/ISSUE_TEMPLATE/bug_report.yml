@@ -1,0 +1,20 @@
+name: Bug report / 问题反馈
+description: Help improve capture, language support, and provider connections.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened? / 遇到了什么问题？
+      description: Include the expected result and steps to reproduce. English, Chinese, and Japanese are welcome.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Versions / 版本
+      placeholder: macOS, Anki Capture, Anki, AI CLI, source reader
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Details / 补充信息
+      description: Remove account identifiers, login tokens, private documents, and API keys before sharing logs or screenshots.

@@ -20,7 +20,7 @@ struct MainView: View {
         .sheet(item: $preview) { job in CardPreview(job: job, model: model) }
         .confirmationDialog("撤销这次添加？", isPresented: Binding(get: { undoJob != nil }, set: { if !$0 { undoJob = nil } }), titleVisibility: .visible) {
             if let job = undoJob {
-                Button("删除“\(job.input.text)”及其新建卡片", role: .destructive) { Task { await model.undo(job) }; undoJob = nil }
+                Button(L10n.format("删除“%@”及其新建卡片", job.input.text), role: .destructive) { Task { await model.undo(job) }; undoJob = nil }
             }
             Button("取消", role: .cancel) { undoJob = nil }
         } message: { Text("仅适用于本工具新建、尚无复习记录的字卡。已有卡片不会被删除。") }
@@ -65,7 +65,7 @@ struct MainView: View {
                     Button(action: submit) {
                         HStack(spacing: 8) {
                             if submitting { ProgressView().controlSize(.mini) }
-                            Text(submitting ? "正在收录" : model.configuration.autoSave ? "生成并收录" : "生成预览")
+                            Text(LocalizedStringKey(submitting ? "正在收录" : model.configuration.autoSave ? "生成并收录" : "生成预览"))
                             Spacer()
                             Text("⌘↩").font(.caption).accessibilityHidden(true)
                         }
@@ -74,7 +74,7 @@ struct MainView: View {
                     .keyboardShortcut(.return, modifiers: .command)
                     .disabled(submitting || term.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.configuration.deck.isEmpty)
                     .help("生成字卡并按当前收录偏好处理，Command-Return")
-                    Text(model.configuration.autoSave ? "生成后自动加入所选牌组。" : "生成后可先预览、编辑，再确认加入。")
+                    Text(LocalizedStringKey(model.configuration.autoSave ? "生成后自动加入所选牌组。" : "生成后可先预览、编辑，再确认加入。"))
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 captureStatus
@@ -89,9 +89,9 @@ struct MainView: View {
                 Button("选择目标牌组") { model.page = .settings }
             }
             ForEach(model.diagnostics.filter { $0.name == "AnkiConnect" || $0.name == model.configuration.provider.title + " 登录" }, id: \.name) { item in
-                StatusLabel(title: item.name == "AnkiConnect" ? (item.ok ? "Anki 已连接" : "Anki 尚未连接") : (item.ok ? "\(model.configuration.provider.title) 已连接" : "\(model.configuration.provider.title) 需要连接"),
+                StatusLabel(title: item.name == "AnkiConnect" ? (item.ok ? "Anki 已连接" : "Anki 尚未连接") : (item.ok ? L10n.format("%@ 已连接", model.configuration.provider.title) : L10n.format("%@ 需要连接", model.configuration.provider.title)),
                             symbol: item.ok ? "checkmark.circle" : "exclamationmark.circle", color: item.ok ? .secondary : .orange)
-                    .help(item.detail)
+                    .help(Text(LocalizedStringKey(item.detail)))
             }
             if model.diagnostics.contains(where: { !$0.ok && $0.name == model.configuration.provider.title + " 登录" }) {
                 Button("管理 AI 连接") { model.page = .connections }.font(.caption)
@@ -103,7 +103,7 @@ struct MainView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text("最近收录").font(.headline).accessibilityAddTraits(.isHeader)
                 Spacer()
-                Text("今天 \(model.savedToday) · 待处理 \(model.pending)")
+                Text(L10n.format("今天 %lld · 待处理 %lld", model.savedToday, model.pending))
                     .font(.caption).foregroundStyle(.secondary)
             }.padding(24)
             Divider()
@@ -126,7 +126,7 @@ struct MainView: View {
             Divider()
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "tray").accessibilityHidden(true)
-                Text(model.message).lineLimit(2)
+                Text(LocalizedStringKey(model.message)).lineLimit(2)
             }.font(.caption).foregroundStyle(.secondary)
                 .padding(.horizontal, 24).padding(.vertical, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -189,8 +189,8 @@ private struct CaptureHistoryRow: View {
                 Text(job.createdAt, style: .relative)
                 Spacer()
                 if job.card != nil {
-                    Button(job.status == .review ? "预览并确认" : "查看字卡", action: preview)
-                        .accessibilityLabel("\(job.input.text)，\(job.status == .review ? "预览并确认" : "查看字卡")")
+                    Button(LocalizedStringKey(job.status == .review ? "预览并确认" : "查看字卡"), action: preview)
+                        .accessibilityLabel(Text(verbatim: job.input.text + ", " + L10n.text(job.status == .review ? "预览并确认" : "查看字卡")))
                 }
             }.font(.caption).foregroundStyle(.secondary)
             if [.failed, .waitingForAnki].contains(job.status) || job.noteID != nil || job.status == .saved {
@@ -225,14 +225,14 @@ private struct CardPreview: View {
             }.padding(24)
             Form {
                 Section("释义") {
-                    cardField("中文释义", text: $card.meaningZh)
-                    cardField("英文解释", text: $card.definitionEn)
+                    cardField("释义", text: $card.meaningZh)
+                    cardField("定义", text: $card.definitionEn)
                     cardField("词性", text: $card.partOfSpeech)
                     cardField("发音", text: $card.pronunciation)
                 }
                 Section("例句") {
-                    cardField("英文例句", text: $card.exampleEn)
-                    cardField("中文翻译", text: $card.exampleZh)
+                    cardField("例句", text: $card.exampleEn)
+                    cardField("例句翻译", text: $card.exampleZh)
                 }
                 if !job.input.context.isEmpty || !job.input.source.isEmpty {
                     Section("阅读来源") {
@@ -257,11 +257,11 @@ private struct CardPreview: View {
     }
     @ViewBuilder private func cardField(_ title: String, text: Binding<String>) -> some View {
         if job.status == .review {
-            TextField(title, text: text, axis: .vertical).lineLimit(1...4)
+            TextField(LocalizedStringKey(title), text: text, axis: .vertical).lineLimit(1...4)
         } else {
-            LabeledContent(title) { Text(text.wrappedValue).textSelection(.enabled).fixedSize(horizontal: false, vertical: true) }
+            LabeledContent(LocalizedStringKey(title)) { Text(text.wrappedValue).textSelection(.enabled).fixedSize(horizontal: false, vertical: true) }
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(title).accessibilityValue(text.wrappedValue)
+                .accessibilityLabel(Text(LocalizedStringKey(title))).accessibilityValue(text.wrappedValue)
         }
     }
 }

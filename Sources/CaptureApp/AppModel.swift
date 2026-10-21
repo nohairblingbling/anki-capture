@@ -39,6 +39,7 @@ final class AppModel {
         configuration = try AppConfiguration.load(from: paths)
         store = try JobStore(paths: paths)
         worker = QueueWorker(store: store, generator: LocalCLIGenerator(paths: paths))
+        L10n.language = configuration.interfaceLanguage
     }
     var pending: Int { jobs.filter { [.queued, .generating, .ready, .saving, .waitingForAnki].contains($0.status) }.count }
     var savedToday: Int { jobs.filter { $0.status == .saved && Calendar.current.isDateInToday($0.updatedAt) }.count }
@@ -68,7 +69,7 @@ final class AppModel {
             for job in current {
                 if let prior = knownStatus[job.id], prior != job.status,
                    [.saved, .duplicate, .failed, .review].contains(job.status) {
-                    let text = "\(job.input.text) · \(job.status.title)"
+                    let text = "\(job.input.text) · \(L10n.text(job.status.title))"
                     message = text
                     CaptureHUD.show(text, isError: job.status == .failed)
                 }
@@ -84,7 +85,7 @@ final class AppModel {
     @discardableResult func enqueue(_ input: CaptureInput) async -> Bool {
         do {
             let job = try await store.enqueue(input, config: configuration.validated())
-            message = "\(input.text) · \(job.status.title)"
+            message = "\(input.text) · \(L10n.text(job.status.title))"
             CaptureHUD.show(message)
             await refresh()
             processQueue()
@@ -110,9 +111,10 @@ final class AppModel {
         do {
             try draft.save(to: paths)
             configuration = draft
+            L10n.language = draft.interfaceLanguage
             applyDockPreference()
             error = nil
-            message = "设置已保存。"
+            message = L10n.text("设置已保存。")
             Task { await checkConnections() }
             return true
         } catch { report(error); return false }
@@ -150,7 +152,7 @@ final class AppModel {
                 try? FileManager.default.removeItem(at: file)
                 Task { @MainActor in self.report(CaptureError.process("无法打开终端。可以复制登录命令，在终端中手动执行。")) }
             }
-            message = "在终端完成 \(provider.title) 登录后，返回 AI 连接页面刷新。"
+            message = L10n.format("在终端完成 %@ 登录后，返回 AI 连接页面刷新。", provider.title)
         } catch { report(error) }
     }
     func verify(_ provider: AIProvider) async {
@@ -175,7 +177,7 @@ final class AppModel {
         do {
             try await AnkiClient(config: configuration).undo(job)
             try await store.finish(job.id, status: .undone)
-            await refresh(); message = "已撤销：\(job.input.text)"
+            await refresh(); message = L10n.format("已撤销：%@", job.input.text)
         } catch { report(error) }
     }
     func report(_ error: Error) {

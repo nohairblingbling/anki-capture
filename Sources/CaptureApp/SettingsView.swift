@@ -15,6 +15,17 @@ struct SettingsView: View {
                 .frame(maxWidth: 736, alignment: .leading)
                 .padding(.horizontal, AppStyle.pagePadding).padding(.top, 28).padding(.bottom, 8)
             Form {
+                Section("语言") {
+                    Picker("界面语言", selection: Binding(get: { model.configuration.interfaceLanguage }, set: { language in
+                        var config = model.configuration; config.interfaceLanguage = language; model.saveSettings(config)
+                    })) {
+                        ForEach(AppLanguage.allCases, id: \.self) { language in
+                            Text(LocalizedStringKey(language.nativeName)).tag(language)
+                        }
+                    }
+                    Text("立即生效，也可以随时改回跟随系统。")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
                 Section("应用") {
                     Toggle(isOn: Binding(get: { model.configuration.showInDock }, set: { model.setDockVisibility($0) })) {
                         VStack(alignment: .leading, spacing: 5) {
@@ -35,7 +46,7 @@ struct SettingsView: View {
                     Toggle(isOn: $draft.autoSave) {
                         VStack(alignment: .leading, spacing: 5) {
                             Text("生成后直接加入牌组")
-                            Text(draft.autoSave ? "后台完成制卡与收录，成功后显示提示。" : "先在最近收录中预览、编辑，再确认加入。")
+                            Text(LocalizedStringKey(draft.autoSave ? "后台完成制卡与收录，成功后显示提示。" : "先在最近收录中预览、编辑，再确认加入。"))
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                     }.accessibilityLabel("生成后直接加入牌组")
@@ -43,7 +54,7 @@ struct SettingsView: View {
                     DisclosureGroup("Anki 连接与安装帮助") {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
-                                Button(model.checking ? "正在检查…" : "刷新牌组与连接") { Task { await model.checkConnections() } }
+                                Button(LocalizedStringKey(model.checking ? "正在检查…" : "刷新牌组与连接")) { Task { await model.checkConnections() } }
                                     .disabled(model.checking)
                                 Link("安装 AnkiConnect", destination: URL(string: "https://ankiweb.net/shared/info/2055492159")!)
                             }
@@ -53,13 +64,19 @@ struct SettingsView: View {
                     }
                 }
                 Section("制卡偏好") {
+                    Picker("释义语言", selection: $draft.explanationLanguage) {
+                        Text("与界面一致").tag(AppLanguage.system)
+                        ForEach(AppLanguage.allCases.filter { $0 != .system }, id: \.self) { language in
+                            Text(verbatim: language.nativeName).tag(language)
+                        }
+                    }
                     HStack {
                         LabeledContent("当前服务", value: model.configuration.provider.title)
                         Button("管理 AI 连接") { model.page = .connections; model.openMainWindow?() }
                     }
                     TextField("额外制卡偏好", text: $draft.customInstructions, axis: .vertical).lineLimit(2...4)
                         .help("例如：优先使用学术语境，例句尽量简短。留空使用默认制卡说明。")
-                    Text("默认生成中文释义、英文解释、发音和双语例句。")
+                    Text("自动识别词条语言，按所选语言生成释义。支持单词、短语和简短概念。")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Section("快捷键与权限") {
@@ -106,6 +123,7 @@ struct SettingsView: View {
         config.ankiURL = draft.ankiURL; config.ankiAPIKey = draft.ankiAPIKey
         config.timeoutSeconds = draft.timeoutSeconds; config.autoSave = draft.autoSave
         config.customInstructions = draft.customInstructions
+        config.explanationLanguage = draft.explanationLanguage
         return config
     }
 }

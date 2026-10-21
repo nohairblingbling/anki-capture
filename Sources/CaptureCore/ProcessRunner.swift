@@ -20,7 +20,7 @@ public enum ProcessRunner {
     private static func runBlocking(executable: String, arguments: [String], input: String,
                                     directory: URL, timeout: Double, environmentOverrides: [String: String]) throws -> ProcessResult {
             guard FileManager.default.isExecutableFile(atPath: executable) else {
-                throw CaptureError.process("找不到可执行的 CLI：\(executable)。请在设置中选择正确路径。")
+                throw CaptureError.process(L10n.format("找不到可执行的 CLI：%@。请在设置中选择正确路径。", executable))
             }
             let scratch = directory.appendingPathComponent(UUID().uuidString, isDirectory: true)
             try FileManager.default.createDirectory(at: scratch, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
@@ -57,7 +57,7 @@ public enum ProcessRunner {
                     kill(process.processIdentifier, SIGKILL)
                     process.waitUntilExit()
                 }
-                throw CaptureError.process("AI CLI 超时（\(Int(timeout)) 秒）。任务已保留，可稍后重试。")
+                throw CaptureError.process(L10n.format("AI CLI 超时（%d 秒）。任务已保留，可稍后重试。", Int(timeout)))
             }
             func read(_ url: URL) throws -> String {
                 let handle = try FileHandle(forReadingFrom: url)

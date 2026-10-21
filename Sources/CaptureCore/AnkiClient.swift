@@ -33,7 +33,7 @@ public struct AnkiClient: AnkiWriting {
                 throw CaptureError.invalid("AnkiConnect HTTP 响应异常。")
             }
         } catch let error as URLError {
-            throw CaptureError.unavailable("无法连接 AnkiConnect。请打开 Anki，安装插件 2055492159 并重启。任务已保留。\(error.code == .timedOut ? " 请求超时。" : "")")
+            throw CaptureError.unavailable(L10n.text("无法连接 AnkiConnect。请打开 Anki，安装插件 2055492159 并重启。任务已保留。") + (error.code == .timedOut ? " " + L10n.text("请求超时。") : ""))
         }
         guard let envelope = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               envelope.keys.contains("result"), envelope.keys.contains("error") else {
@@ -52,7 +52,7 @@ public struct AnkiClient: AnkiWriting {
         let names: [String] = try await call("modelNames")
         if names.contains(name) {
             let fields: [String] = try await call("modelFieldNames", params: ["modelName": name])
-            guard fields == Self.fields else { throw CaptureError.invalid("笔记类型“\(name)”的字段与 Anki Capture 不匹配，请设置一个新的专用笔记类型名称。") }
+            guard fields == Self.fields else { throw CaptureError.invalid(L10n.format("笔记类型“%@”的字段与 Anki Capture 不匹配，请设置一个新的专用笔记类型名称。", name)) }
             return
         }
         let _: [String: JSONValue] = try await call("createModel", params: [
@@ -61,7 +61,7 @@ public struct AnkiClient: AnkiWriting {
         ])
     }
     public func save(card: VocabularyCard, job: CaptureJob) async throws -> AnkiWriteResult {
-        guard try await deckNames().contains(job.deck) else { throw CaptureError.invalid("目标牌组“\(job.deck)”不存在，请在设置中重新选择。") }
+        guard try await deckNames().contains(job.deck) else { throw CaptureError.invalid(L10n.format("目标牌组“%@”不存在，请在设置中重新选择。", job.deck)) }
         try await ensureNoteType(job.noteType)
         let captureKey = card.captureKey(deck: job.deck, noteType: job.noteType)
         // The first field is a deterministic key, making retries after a timeout idempotent.

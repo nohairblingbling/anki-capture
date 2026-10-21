@@ -9,6 +9,9 @@ mkdir -p "$TASK_APP/Contents/MacOS" "$TASK_APP/Contents/Resources"
 cp "$TASK_BIN/AnkiCapture" "$TASK_APP/Contents/MacOS/AnkiCapture"
 cp "$TASK_BIN/anki-capture" "$TASK_APP/Contents/MacOS/anki-capture"
 cp App/Info.plist "$TASK_APP/Contents/Info.plist"
+for TASK_LOCALE in "$TASK_ROOT"/Sources/CaptureCore/Resources/*.lproj; do
+    ditto "$TASK_LOCALE" "$TASK_APP/Contents/Resources/$(basename "$TASK_LOCALE")"
+done
 # Remove the resource bundle from the early prototype's retired shortcut dependency.
 if [[ -d "$TASK_APP/KeyboardShortcuts_KeyboardShortcuts.bundle" ]]; then
     rm -rf "$TASK_APP/KeyboardShortcuts_KeyboardShortcuts.bundle"

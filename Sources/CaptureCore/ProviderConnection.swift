@@ -88,14 +88,13 @@ public enum ProviderConnections {
                 provider: provider, model: config.model(for: provider), config: config)
             return .init(provider: provider, state: .connected,
                          detail: "当前模型已成功返回字卡。验证不会向 Anki 写入内容。")
-        } catch {
-            let detail = error.localizedDescription
-            if detail.contains("请先在终端完成这个 CLI 的登录") {
-                return .init(provider: provider, state: .signedOut, detail: "尚未完成账号登录。点击连接账号，在官方 CLI 中登录后再验证。")
-            }
-            return .init(provider: provider, state: .failed,
-                         detail: detail.replacingOccurrences(of: "（退出码 [^）]+）", with: "", options: .regularExpression))
+        } catch { return verificationFailure(error, provider: provider) }
+    }
+    static func verificationFailure(_ error: Error, provider: AIProvider) -> ProviderConnection {
+        if case CaptureError.authentication = error {
+            return .init(provider: provider, state: .signedOut, detail: "尚未完成账号登录。点击连接账号，在官方 CLI 中登录后再验证。")
         }
+        return .init(provider: provider, state: .failed, detail: error.localizedDescription)
     }
 }
 
@@ -112,20 +111,20 @@ public enum LoginCommand {
         export PATH=\(shellQuoted(URL(fileURLWithPath: executable).deletingLastPathComponent().path)):"$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
         cd "$HOME"
         print -r -- 'Anki Capture · \(provider.title)'
-        print -r -- '请在官方 CLI 中完成登录，然后返回应用刷新连接。'
+        print -r -- \(shellQuoted(L10n.text("请在官方 CLI 中完成登录，然后返回应用刷新连接。")))
         \(display(provider: provider, executable: executable))
         TASK_LOGIN_STATUS=$?
         print -r -- ''
-        print -r -- '登录流程已结束。返回 Anki Capture，点击刷新或验证连接。'
+        print -r -- \(shellQuoted(L10n.text("登录流程已结束。返回 Anki Capture，点击刷新或验证连接。")))
         /bin/rm -f -- "$0"
-        read -r '?按回车关闭此窗口。'
+        read -r \(shellQuoted("?" + L10n.text("按回车关闭此窗口。")))
         exit "$TASK_LOGIN_STATUS"
         """
     }
     public static func write(provider: AIProvider, config: AppConfiguration, paths: StoragePaths) throws -> URL {
         let executable = config.executable(for: provider)
         guard FileManager.default.isExecutableFile(atPath: executable) else {
-            throw CaptureError.invalid("请先安装 \(provider.title) 官方 CLI，或选择正确的文件位置。")
+            throw CaptureError.invalid(L10n.format("请先安装 %@ 官方 CLI，或选择正确的文件位置。", provider.title))
         }
         let url = paths.runtime.appendingPathComponent("login-\(provider.rawValue)-\(UUID().uuidString).command")
         try Data(script(provider: provider, executable: executable).utf8).write(to: url, options: .atomic)

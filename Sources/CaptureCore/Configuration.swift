@@ -22,6 +22,11 @@ public struct AppConfiguration: Codable, Equatable, Sendable {
     public var claudeModel: String = "sonnet"
     public var geminiModel: String = ""
     public var showInDock: Bool = true
+    public var interfaceLanguage: AppLanguage = .system
+    public var explanationLanguage: AppLanguage = .system
+    public var resolvedExplanationLanguage: AppLanguage {
+        (explanationLanguage == .system ? interfaceLanguage : explanationLanguage).resolved()
+    }
     public var deck: String = ""
     public var noteType: String = "Anki Capture"
     public var ankiURL: String = "http://127.0.0.1:8765"
@@ -48,10 +53,13 @@ public struct AppConfiguration: Codable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case provider, codexPath, claudePath, geminiPath, codexModel, claudeModel, geminiModel, showInDock
         case deck, noteType, ankiURL, ankiAPIKey, timeoutSeconds, autoSave, customInstructions
+        case interfaceLanguage, explanationLanguage
     }
     public init(from decoder: Decoder) throws {
         self.init()
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        interfaceLanguage = try values.decodeIfPresent(AppLanguage.self, forKey: .interfaceLanguage) ?? .system
+        explanationLanguage = try values.decodeIfPresent(AppLanguage.self, forKey: .explanationLanguage) ?? .system
         provider = try values.decodeIfPresent(AIProvider.self, forKey: .provider) ?? provider
         codexPath = try values.decodeIfPresent(String.self, forKey: .codexPath) ?? codexPath
         claudePath = try values.decodeIfPresent(String.self, forKey: .claudePath) ?? claudePath

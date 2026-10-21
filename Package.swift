@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "AnkiCapture",
+    defaultLocalization: "en",
     platforms: [.macOS(.v14)],
     products: [
         .library(name: "CaptureCore", targets: ["CaptureCore"]),
@@ -14,7 +15,7 @@ let package = Package(
     ],
     targets: [
         .systemLibrary(name: "CSQLite"),
-        .target(name: "CaptureCore", dependencies: ["CSQLite"]),
+        .target(name: "CaptureCore", dependencies: ["CSQLite"], resources: [.process("Resources")]),
         .executableTarget(name: "CaptureCLI", dependencies: ["CaptureCore", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .executableTarget(name: "CaptureApp", dependencies: ["CaptureCore"]),
         .testTarget(name: "CaptureCoreTests", dependencies: ["CaptureCore"])

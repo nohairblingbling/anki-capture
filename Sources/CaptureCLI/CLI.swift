@@ -3,26 +3,27 @@ import ArgumentParser
 import CaptureCore
 
 struct CommonOptions: ParsableArguments {
-    @Option(help: "本地数据目录；默认 ~/Library/Application Support/AnkiCapture") var dataDir: String?
+    @Option(help: "Local data folder; defaults to ~/Library/Application Support/AnkiCapture") var dataDir: String?
     var paths: StoragePaths { get throws { try StoragePaths(root: dataDir.map { URL(fileURLWithPath: $0) }) } }
 }
 
 @main
 struct AnkiCaptureCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "anki-capture", abstract: "通过本机 Codex / Claude Code / Gemini 生成英语字卡并加入 Anki。",
-        version: "0.2.1", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
+        commandName: "anki-capture", abstract: "Capture multilingual Anki cards using your local Codex, Claude Code, or Gemini CLI.",
+        version: "0.3.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
                                       Generate.self, Add.self, Jobs.self, Retry.self, Undo.self, Run.self], defaultSubcommand: Doctor.self)
 }
 
 struct Connections: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "检查三个官方 CLI；--verify 会发出一次制卡请求，不写入 Anki。")
+    static let configuration = CommandConfiguration(abstract: "Check the three official CLIs; --verify makes one AI request without writing to Anki.")
     @OptionGroup var common: CommonOptions
-    @Option(help: "主动验证 codex / claude / gemini，使用该服务保存的模型。") var verify: String?
-    @Option(help: "显示某个服务的官方登录命令。") var loginCommand: String?
+    @Option(help: "Test codex / claude / gemini using its saved model.") var verify: String?
+    @Option(help: "Print the official sign-in command for a provider.") var loginCommand: String?
     mutating func run() async throws {
         let paths = try common.paths
         let config = try AppConfiguration.load(from: paths)
+        L10n.language = config.interfaceLanguage
         if let loginCommand {
             let provider = try selectedProvider(loginCommand, fallback: config.provider)
             let executable = config.executable(for: provider)
@@ -41,15 +42,16 @@ struct Connections: AsyncParsableCommand {
 }
 
 struct Doctor: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "检查本机 CLI 登录和 AnkiConnect。")
+    static let configuration = CommandConfiguration(abstract: "Check local CLI authentication and AnkiConnect.")
     @OptionGroup var common: CommonOptions
     @Flag var json = false
     mutating func run() async throws {
         let paths = try common.paths
         let config = try AppConfiguration.load(from: paths)
+        L10n.language = config.interfaceLanguage
         let items = await Diagnostics.check(config: config, paths: paths)
         if json { print(try jsonString(items)) }
-        else { for item in items { print("\(item.ok ? "✓" : "·") \(item.name)：\(item.detail)") } }
+        else { for item in items { print("\(item.ok ? "✓" : "·") \(L10n.text(item.name)): \(L10n.text(item.detail))") } }
         if !items.contains(where: { $0.name == config.provider.title + " 登录" && $0.ok }) { throw ExitCode(2) }
         if !items.contains(where: { $0.name == "AnkiConnect" && $0.ok })
             || !items.contains(where: { $0.name == "目标牌组" && $0.ok }) { throw ExitCode(3) }
@@ -57,25 +59,35 @@ struct Doctor: AsyncParsableCommand {
 }
 
 struct Configure: ParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "保存牌组、服务和模型设置。")
+    static let configuration = CommandConfiguration(abstract: "Save deck, provider, model, and language preferences.")
     @OptionGroup var common: CommonOptions
     @Option var deck: String?
+    @Option(help: "Interface language: system / en / zh-Hans / ja") var language: String?
+    @Option(help: "Explanation language: system (same as interface) / en / zh-Hans / ja") var explanationLanguage: String?
     @Option var provider: String?
     @Option var model: String?
     @Option var noteType: String?
     @Option var codexPath: String?
     @Option var claudePath: String?
     @Option var geminiPath: String?
-    @Option(help: "显示 Dock 图标：true / false") var showInDock: Bool?
+    @Option(help: "Show the Dock icon: true / false") var showInDock: Bool?
     @Option var ankiUrl: String?
-    @Flag(help: "生成后等待预览确认。") var preview = false
-    @Flag(help: "生成后自动写入 Anki。") var autoSave = false
+    @Flag(help: "Require review before adding generated cards.") var preview = false
+    @Flag(help: "Automatically add generated cards to Anki.") var autoSave = false
     mutating func run() throws {
         let paths = try common.paths
         var config = try AppConfiguration.load(from: paths)
         if let provider {
-            guard let value = AIProvider(rawValue: provider) else { throw ValidationError("provider 必须为 codex、claude 或 gemini。") }
+            guard let value = AIProvider(rawValue: provider) else { throw ValidationError("provider must be codex, claude, or gemini.") }
             config.provider = value
+        }
+        if let language {
+            guard let value = AppLanguage(rawValue: language) else { throw ValidationError("language must be system, en, zh-Hans, or ja.") }
+            config.interfaceLanguage = value
+        }
+        if let explanationLanguage {
+            guard let value = AppLanguage(rawValue: explanationLanguage) else { throw ValidationError("explanation-language must be system, en, zh-Hans, or ja.") }
+            config.explanationLanguage = value
         }
         if let deck { config.deck = deck }
         if let model { config.setModel(model, for: config.provider) }
@@ -85,15 +97,15 @@ struct Configure: ParsableCommand {
         if let geminiPath { config.geminiPath = geminiPath }
         if let showInDock { config.showInDock = showInDock }
         if let ankiUrl { config.ankiURL = ankiUrl }
-        guard !(preview && autoSave) else { throw ValidationError("preview 和 auto-save 只能选择一个。") }
+        guard !(preview && autoSave) else { throw ValidationError("Choose either preview or auto-save.") }
         if preview { config.autoSave = false }; if autoSave { config.autoSave = true }
         try config.save(to: paths)
-        print("已保存：\(config.provider.title) / \(config.model.isEmpty ? "CLI 默认模型" : config.model) → \(config.deck.isEmpty ? "尚未选择牌组" : config.deck)")
+        print("Saved: \(config.provider.title) / \(config.model.isEmpty ? "CLI default" : config.model) → \(config.deck.isEmpty ? "No deck selected" : config.deck)")
     }
 }
 
 struct Decks: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "列出当前 Anki 用户的牌组。")
+    static let configuration = CommandConfiguration(abstract: "List decks in the current Anki profile.")
     @OptionGroup var common: CommonOptions
     mutating func run() async throws {
         let client = try AnkiClient(config: AppConfiguration.load(from: common.paths))
@@ -101,24 +113,24 @@ struct Decks: AsyncParsableCommand {
     }
 }
 struct Models: ParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "显示本机 Codex 缓存中的模型候选（实际访问权限需调用验证）。")
+    static let configuration = CommandConfiguration(abstract: "List cached Codex models and provider aliases; model access requires testing.")
     mutating func run() throws {
         print(try jsonString(["codex_cached": ExecutableLocator.codexModels(), "claude_aliases": AIProvider.claude.modelSuggestions, "gemini_aliases": AIProvider.gemini.modelSuggestions]))
     }
 }
 struct Setup: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "在 Anki 中初始化专用字卡笔记类型。")
+    static let configuration = CommandConfiguration(abstract: "Initialize the dedicated Anki note type.")
     @OptionGroup var common: CommonOptions
     mutating func run() async throws {
         let config = try AppConfiguration.load(from: common.paths)
         let client = try AnkiClient(config: config)
-        guard try await client.deckNames().contains(config.deck) else { throw ValidationError("请先配置一个现有牌组。") }
+        guard try await client.deckNames().contains(config.deck) else { throw ValidationError("Configure an existing Anki deck first.") }
         try await client.ensureNoteType(config.noteType)
-        print("字卡模板已就绪：\(config.noteType)")
+        print("Note type ready: \(config.noteType)")
     }
 }
 struct Generate: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "仅生成字卡 JSON，供验证和预览使用。")
+    static let configuration = CommandConfiguration(abstract: "Generate card JSON without writing to Anki.")
     @OptionGroup var common: CommonOptions
     @Argument var text: String
     @Option var context = ""
@@ -128,6 +140,7 @@ struct Generate: AsyncParsableCommand {
     mutating func run() async throws {
         let paths = try common.paths
         let config = try AppConfiguration.load(from: paths)
+        L10n.language = config.interfaceLanguage
         let selected = try selectedProvider(provider, fallback: config.provider)
         let input = try CaptureInput(text: text, context: context, source: source, sourceApp: "CLI")
         let card = try await LocalCLIGenerator(paths: paths).generate(input: input, provider: selected,
@@ -136,16 +149,16 @@ struct Generate: AsyncParsableCommand {
     }
 }
 struct Add: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "添加单词/短语；任务先持久化，再生成和写卡。")
+    static let configuration = CommandConfiguration(abstract: "Capture a word, phrase, or short concept; persist before generating and adding.")
     @OptionGroup var common: CommonOptions
-    @Argument(help: "省略时从标准输入读取。") var text: String?
+    @Argument(help: "Read from stdin when omitted.") var text: String?
     @Option var context = ""
     @Option var source = ""
     @Option var deck: String?
     @Option var provider: String?
     @Option var model: String?
     @Flag var queueOnly = false
-    @Flag(help: "本次生成后等待预览确认。") var preview = false
+    @Flag(help: "Require review before adding this generated card.") var preview = false
     mutating func run() async throws {
         let paths = try common.paths
         var config = try AppConfiguration.load(from: paths)
@@ -165,18 +178,19 @@ struct Add: AsyncParsableCommand {
     }
 }
 struct Jobs: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "查看本地任务和生成结果。")
+    static let configuration = CommandConfiguration(abstract: "View local captures and generated cards.")
     @OptionGroup var common: CommonOptions
     @Option var limit = 30
     mutating func run() async throws { print(try jsonString(await JobStore(paths: common.paths).list(limit: limit))) }
 }
 struct Retry: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "重试失败任务或确认预览字卡；已生成内容会复用。")
+    static let configuration = CommandConfiguration(abstract: "Retry a failed capture or confirm a reviewed card; reuse generated content.")
     @OptionGroup var common: CommonOptions
     @Argument var id: String
     mutating func run() async throws {
         let paths = try common.paths
         let config = try AppConfiguration.load(from: paths)
+        L10n.language = config.interfaceLanguage
         let store = try JobStore(paths: paths)
         try await store.retry(id)
         try await QueueWorker(store: store, generator: LocalCLIGenerator(paths: paths)).drain(config: config)
@@ -184,7 +198,7 @@ struct Retry: AsyncParsableCommand {
     }
 }
 struct Run: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "处理待办队列；--watch 持续处理等待 Anki 的任务。")
+    static let configuration = CommandConfiguration(abstract: "Process the queue; --watch keeps retrying captures waiting for Anki.")
     @OptionGroup var common: CommonOptions
     @Flag var watch = false
     mutating func run() async throws {
@@ -199,15 +213,15 @@ struct Run: AsyncParsableCommand {
     }
 }
 struct Undo: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "撤销本任务新建、尚无复习记录的字卡；需 --yes。")
+    static let configuration = CommandConfiguration(abstract: "Undo cards created by this capture with no review history; requires --yes.")
     @OptionGroup var common: CommonOptions
     @Argument var id: String
     @Flag var yes = false
     mutating func run() async throws {
-        guard yes else { throw ValidationError("此操作会删除该任务新建的笔记和卡片。确认后加 --yes。") }
+        guard yes else { throw ValidationError("This deletes the note and cards created by this capture. Use --yes to confirm.") }
         let paths = try common.paths
         let store = try JobStore(paths: paths)
-        guard let job = try await store.get(id) else { throw ValidationError("找不到任务。") }
+        guard let job = try await store.get(id) else { throw ValidationError("Capture not found.") }
         try await AnkiClient(config: AppConfiguration.load(from: paths)).undo(job)
         try await store.finish(id, status: .undone)
         print(try jsonString(await store.get(id)))
@@ -215,6 +229,6 @@ struct Undo: AsyncParsableCommand {
 }
 private func selectedProvider(_ name: String?, fallback: AIProvider) throws -> AIProvider {
     guard let name else { return fallback }
-    guard let provider = AIProvider(rawValue: name) else { throw ValidationError("provider 必须为 codex、claude 或 gemini。") }
+    guard let provider = AIProvider(rawValue: name) else { throw ValidationError("provider must be codex, claude, or gemini.") }
     return provider
 }

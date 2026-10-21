@@ -1,0 +1,1187 @@
+{
+  "AI 连接": {
+    "en": "AI Connections",
+    "zh-Hans": "AI 连接",
+    "ja": "AI 接続"
+  },
+  "AI 连接…": {
+    "en": "AI Connections…",
+    "zh-Hans": "AI 连接…",
+    "ja": "AI 接続…"
+  },
+  "偏好设置": {
+    "en": "Preferences",
+    "zh-Hans": "偏好设置",
+    "ja": "環境設定"
+  },
+  "收词": {
+    "en": "Capture",
+    "zh-Hans": "收词",
+    "ja": "取り込む"
+  },
+  "工作区": {
+    "en": "Workspace",
+    "zh-Hans": "工作区",
+    "ja": "ワークスペース"
+  },
+  "当前牌组": {
+    "en": "Current deck",
+    "zh-Hans": "当前牌组",
+    "ja": "現在のデッキ"
+  },
+  "尚未选择牌组": {
+    "en": "No deck selected",
+    "zh-Hans": "尚未选择牌组",
+    "ja": "デッキ未選択"
+  },
+  "默认模型": {
+    "en": "Default model",
+    "zh-Hans": "默认模型",
+    "ja": "既定のモデル"
+  },
+  "刷新连接": {
+    "en": "Refresh connections",
+    "zh-Hans": "刷新连接",
+    "ja": "接続を更新"
+  },
+  "检查 AI 与 Anki 连接，不调用模型": {
+    "en": "Check AI and Anki connections without calling a model",
+    "zh-Hans": "检查 AI 与 Anki 连接，不调用模型",
+    "ja": "モデルを呼び出さず AI と Anki の接続を確認"
+  },
+  "操作未完成": {
+    "en": "Could not complete the action",
+    "zh-Hans": "操作未完成",
+    "ja": "操作を完了できませんでした"
+  },
+  "好": {
+    "en": "OK",
+    "zh-Hans": "好",
+    "ja": "OK"
+  },
+  "留下一个新词": {
+    "en": "Keep a new word",
+    "zh-Hans": "留下一个新词",
+    "ja": "新しい言葉を残す"
+  },
+  "阅读时选词，按快捷键收录。\n也可以在这里输入。": {
+    "en": "Select text while reading and press the shortcut.\nOr type it here.",
+    "zh-Hans": "阅读时选词，按快捷键收录。\n也可以在这里输入。",
+    "ja": "読書中に選択してショートカットで取り込みます。\nここに入力することもできます。"
+  },
+  "选词收录": {
+    "en": "Capture selection",
+    "zh-Hans": "选词收录",
+    "ja": "選択範囲を取り込む"
+  },
+  "开启辅助功能权限": {
+    "en": "Enable Accessibility",
+    "zh-Hans": "开启辅助功能权限",
+    "ja": "アクセシビリティを許可"
+  },
+  "允许读取你主动选择的文本。": {
+    "en": "Allow access to text you actively select.",
+    "zh-Hans": "允许读取你主动选择的文本。",
+    "ja": "自分で選択したテキストの読み取りを許可します。"
+  },
+  "单词或短语": {
+    "en": "Word or phrase",
+    "zh-Hans": "单词或短语",
+    "ja": "単語・フレーズ"
+  },
+  "原句或上下文": {
+    "en": "Sentence or context",
+    "zh-Hans": "原句或上下文",
+    "ja": "原文・文脈"
+  },
+  "原句或上下文，可选": {
+    "en": "Sentence or context, optional",
+    "zh-Hans": "原句或上下文，可选",
+    "ja": "原文・文脈（任意）"
+  },
+  "来源": {
+    "en": "Source",
+    "zh-Hans": "来源",
+    "ja": "出典"
+  },
+  "来源标题或链接，可选": {
+    "en": "Source title or link, optional",
+    "zh-Hans": "来源标题或链接，可选",
+    "ja": "出典のタイトル・リンク（任意）"
+  },
+  "标题或链接": {
+    "en": "Title or link",
+    "zh-Hans": "标题或链接",
+    "ja": "タイトル・リンク"
+  },
+  "可选": {
+    "en": "Optional",
+    "zh-Hans": "可选",
+    "ja": "任意"
+  },
+  "生成并收录": {
+    "en": "Generate & add",
+    "zh-Hans": "生成并收录",
+    "ja": "生成して追加"
+  },
+  "生成预览": {
+    "en": "Generate preview",
+    "zh-Hans": "生成预览",
+    "ja": "プレビューを生成"
+  },
+  "正在收录": {
+    "en": "Adding…",
+    "zh-Hans": "正在收录",
+    "ja": "取り込み中…"
+  },
+  "生成字卡并按当前收录偏好处理，Command-Return": {
+    "en": "Generate a card using your capture preferences, Command-Return",
+    "zh-Hans": "生成字卡并按当前收录偏好处理，Command-Return",
+    "ja": "現在の設定でカードを生成（Command-Return）"
+  },
+  "生成后自动加入所选牌组。": {
+    "en": "Cards are added to the selected deck automatically.",
+    "zh-Hans": "生成后自动加入所选牌组。",
+    "ja": "生成したカードを選択中のデッキに自動追加します。"
+  },
+  "生成后可先预览、编辑，再确认加入。": {
+    "en": "Preview and edit generated cards before adding them.",
+    "zh-Hans": "生成后可先预览、编辑，再确认加入。",
+    "ja": "生成後に確認・編集してから追加できます。"
+  },
+  "选择目标牌组": {
+    "en": "Choose a deck",
+    "zh-Hans": "选择目标牌组",
+    "ja": "デッキを選択"
+  },
+  "Anki 已连接": {
+    "en": "Anki connected",
+    "zh-Hans": "Anki 已连接",
+    "ja": "Anki 接続済み"
+  },
+  "Anki 尚未连接": {
+    "en": "Anki not connected",
+    "zh-Hans": "Anki 尚未连接",
+    "ja": "Anki 未接続"
+  },
+  "%@ 已连接": {
+    "en": "%@ connected",
+    "zh-Hans": "%@ 已连接",
+    "ja": "%@ 接続済み"
+  },
+  "%@ 需要连接": {
+    "en": "Connect %@",
+    "zh-Hans": "%@ 需要连接",
+    "ja": "%@ に接続してください"
+  },
+  "管理 AI 连接": {
+    "en": "Manage AI connections",
+    "zh-Hans": "管理 AI 连接",
+    "ja": "AI 接続を管理"
+  },
+  "最近收录": {
+    "en": "Recent captures",
+    "zh-Hans": "最近收录",
+    "ja": "最近の取り込み"
+  },
+  "今天 %lld · 待处理 %lld": {
+    "en": "Today %lld · Pending %lld",
+    "zh-Hans": "今天 %lld · 待处理 %lld",
+    "ja": "今日 %lld · 処理待ち %lld"
+  },
+  "从一个词开始": {
+    "en": "Start with one word",
+    "zh-Hans": "从一个词开始",
+    "ja": "ひとつの言葉から"
+  },
+  "输入单词，或在阅读器中选词并按快捷键。\n生成结果与收录状态会出现在这里。": {
+    "en": "Type a word, or select text in your reader and press the shortcut.\nYour cards and capture status will appear here.",
+    "zh-Hans": "输入单词，或在阅读器中选词并按快捷键。\n生成结果与收录状态会出现在这里。",
+    "ja": "単語を入力するか、リーダーで選択してショートカットを押してください。\n生成したカードと取り込み状況がここに表示されます。"
+  },
+  "预览并确认": {
+    "en": "Review & add",
+    "zh-Hans": "预览并确认",
+    "ja": "確認して追加"
+  },
+  "查看字卡": {
+    "en": "View card",
+    "zh-Hans": "查看字卡",
+    "ja": "カードを見る"
+  },
+  "在 Anki 中打开": {
+    "en": "Open in Anki",
+    "zh-Hans": "在 Anki 中打开",
+    "ja": "Anki で開く"
+  },
+  "撤销添加": {
+    "en": "Undo addition",
+    "zh-Hans": "撤销添加",
+    "ja": "追加を取り消す"
+  },
+  "重试": {
+    "en": "Retry",
+    "zh-Hans": "重试",
+    "ja": "再試行"
+  },
+  "撤销这次添加？": {
+    "en": "Undo this addition?",
+    "zh-Hans": "撤销这次添加？",
+    "ja": "この追加を取り消しますか？"
+  },
+  "删除“%@”及其新建卡片": {
+    "en": "Delete “%@” and its new cards",
+    "zh-Hans": "删除“%@”及其新建卡片",
+    "ja": "「%@」と新規カードを削除"
+  },
+  "仅适用于本工具新建、尚无复习记录的字卡。已有卡片不会被删除。": {
+    "en": "Only newly created cards with no review history can be removed. Existing cards are preserved.",
+    "zh-Hans": "仅适用于本工具新建、尚无复习记录的字卡。已有卡片不会被删除。",
+    "ja": "このアプリで新規作成した未学習のカードだけを削除します。既存のカードは削除しません。"
+  },
+  "取消": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "ja": "キャンセル"
+  },
+  "释义": {
+    "en": "Meaning",
+    "zh-Hans": "释义",
+    "ja": "意味"
+  },
+  "定义": {
+    "en": "Definition",
+    "zh-Hans": "定义",
+    "ja": "定義"
+  },
+  "例句": {
+    "en": "Example",
+    "zh-Hans": "例句",
+    "ja": "例文"
+  },
+  "例句翻译": {
+    "en": "Example translation",
+    "zh-Hans": "例句翻译",
+    "ja": "例文の訳"
+  },
+  "词性": {
+    "en": "Part of speech",
+    "zh-Hans": "词性",
+    "ja": "品詞"
+  },
+  "发音": {
+    "en": "Pronunciation",
+    "zh-Hans": "发音",
+    "ja": "発音・読み"
+  },
+  "阅读来源": {
+    "en": "Reading source",
+    "zh-Hans": "阅读来源",
+    "ja": "読書の出典"
+  },
+  "原句": {
+    "en": "Original context",
+    "zh-Hans": "原句",
+    "ja": "原文"
+  },
+  "关闭": {
+    "en": "Close",
+    "zh-Hans": "关闭",
+    "ja": "閉じる"
+  },
+  "确认加入 Anki": {
+    "en": "Add to Anki",
+    "zh-Hans": "确认加入 Anki",
+    "ja": "Anki に追加"
+  },
+  "词义可能存在歧义，请检查。": {
+    "en": "The meaning may be ambiguous. Please review.",
+    "zh-Hans": "词义可能存在歧义，请检查。",
+    "ja": "意味が曖昧な可能性があります。ご確認ください。"
+  },
+  "连接自己的账号，选择熟悉的模型。": {
+    "en": "Connect your accounts and choose your preferred models.",
+    "zh-Hans": "连接自己的账号，选择熟悉的模型。",
+    "ja": "自分のアカウントに接続し、使い慣れたモデルを選びます。"
+  },
+  "默认制卡服务": {
+    "en": "Default AI provider",
+    "zh-Hans": "默认制卡服务",
+    "ja": "既定の AI サービス"
+  },
+  "用于之后收录的词汇": {
+    "en": "Used for new captures",
+    "zh-Hans": "用于之后收录的词汇",
+    "ja": "今後の取り込みに使用"
+  },
+  "账号与额度由官方 CLI 管理": {
+    "en": "Accounts and usage are managed by the official CLI",
+    "zh-Hans": "账号与额度由官方 CLI 管理",
+    "ja": "アカウントと利用枠は公式 CLI が管理"
+  },
+  "登录在终端和官方网页完成，本应用不保存登录令牌。验证会消耗少量所选服务额度，不会写入 Anki。": {
+    "en": "Sign in through Terminal and the official website. This app does not store login tokens. Testing uses a small amount of your provider's quota and never writes to Anki.",
+    "zh-Hans": "登录在终端和官方网页完成，本应用不保存登录令牌。验证会消耗少量所选服务额度，不会写入 Anki。",
+    "ja": "ログインはターミナルと公式サイトで行います。このアプリはトークンを保存しません。接続テストは少量の利用枠を消費しますが、Anki には書き込みません。"
+  },
+  "默认": {
+    "en": "Default",
+    "zh-Hans": "默认",
+    "ja": "既定"
+  },
+  "正在检查本机 CLI…": {
+    "en": "Checking local CLI…",
+    "zh-Hans": "正在检查本机 CLI…",
+    "ja": "ローカル CLI を確認中…"
+  },
+  "重新登录": {
+    "en": "Sign in again",
+    "zh-Hans": "重新登录",
+    "ja": "再ログイン"
+  },
+  "连接账号": {
+    "en": "Sign in",
+    "zh-Hans": "连接账号",
+    "ja": "ログイン"
+  },
+  "%@ 连接账号": {
+    "en": "Sign in to %@",
+    "zh-Hans": "%@ 连接账号",
+    "ja": "%@ にログイン"
+  },
+  "验证连接": {
+    "en": "Test connection",
+    "zh-Hans": "验证连接",
+    "ja": "接続テスト"
+  },
+  "%@ 验证连接": {
+    "en": "Test %@ connection",
+    "zh-Hans": "%@ 验证连接",
+    "ja": "%@ の接続をテスト"
+  },
+  "正在验证": {
+    "en": "Testing…",
+    "zh-Hans": "正在验证",
+    "ja": "テスト中…"
+  },
+  "安装官方 CLI": {
+    "en": "Install official CLI",
+    "zh-Hans": "安装官方 CLI",
+    "ja": "公式 CLI をインストール"
+  },
+  "模型与连接设置": {
+    "en": "Model & connection",
+    "zh-Hans": "模型与连接设置",
+    "ja": "モデル・接続設定"
+  },
+  "%@ 模型与连接设置": {
+    "en": "%@ model and connection settings",
+    "zh-Hans": "%@ 模型与连接设置",
+    "ja": "%@ のモデル・接続設定"
+  },
+  "已展开": {
+    "en": "Expanded",
+    "zh-Hans": "已展开",
+    "ja": "展開済み"
+  },
+  "已折叠": {
+    "en": "Collapsed",
+    "zh-Hans": "已折叠",
+    "ja": "折りたたみ済み"
+  },
+  "制卡模型": {
+    "en": "Card generation model",
+    "zh-Hans": "制卡模型",
+    "ja": "カード生成モデル"
+  },
+  "%@ 模型": {
+    "en": "%@ model",
+    "zh-Hans": "%@ 模型",
+    "ja": "%@ のモデル"
+  },
+  "沿用 CLI 默认模型": {
+    "en": "Use CLI default",
+    "zh-Hans": "沿用 CLI 默认模型",
+    "ja": "CLI の既定値を使用"
+  },
+  "已保存": {
+    "en": "Saved",
+    "zh-Hans": "已保存",
+    "ja": "保存済み"
+  },
+  "保存配置": {
+    "en": "Save configuration",
+    "zh-Hans": "保存配置",
+    "ja": "設定を保存"
+  },
+  "保存 %@ 配置": {
+    "en": "Save %@ configuration",
+    "zh-Hans": "保存 %@ 配置",
+    "ja": "%@ の設定を保存"
+  },
+  "自定义模型 ID，留空使用 CLI 默认值": {
+    "en": "Custom model ID, or leave blank for CLI default",
+    "zh-Hans": "自定义模型 ID，留空使用 CLI 默认值",
+    "ja": "カスタムモデル ID（空欄で CLI の既定値）"
+  },
+  "%@ 自定义模型 ID": {
+    "en": "%@ custom model ID",
+    "zh-Hans": "%@ 自定义模型 ID",
+    "ja": "%@ のカスタムモデル ID"
+  },
+  "CLI 路径与登录命令": {
+    "en": "CLI path & sign-in command",
+    "zh-Hans": "CLI 路径与登录命令",
+    "ja": "CLI パス・ログインコマンド"
+  },
+  "%@ 可执行文件路径": {
+    "en": "%@ executable path",
+    "zh-Hans": "%@ 可执行文件路径",
+    "ja": "%@ の実行ファイルパス"
+  },
+  "%@ CLI 路径": {
+    "en": "%@ CLI path",
+    "zh-Hans": "%@ CLI 路径",
+    "ja": "%@ の CLI パス"
+  },
+  "选择文件…": {
+    "en": "Choose file…",
+    "zh-Hans": "选择文件…",
+    "ja": "ファイルを選択…"
+  },
+  "复制命令": {
+    "en": "Copy command",
+    "zh-Hans": "复制命令",
+    "ja": "コマンドをコピー"
+  },
+  "在终端选择 Sign in with Google。完成后输入 /quit，返回这里验证连接。": {
+    "en": "Choose Sign in with Google in Terminal. Enter /quit when finished, then return here to test the connection.",
+    "zh-Hans": "在终端选择 Sign in with Google。完成后输入 /quit，返回这里验证连接。",
+    "ja": "ターミナルで Sign in with Google を選択します。完了後は /quit を入力し、ここで接続をテストしてください。"
+  },
+  "官方安装说明": {
+    "en": "Official setup guide",
+    "zh-Hans": "官方安装说明",
+    "ja": "公式インストールガイド"
+  },
+  "选择已安装的 %@ 官方 CLI 可执行文件。": {
+    "en": "Choose the installed official %@ CLI executable.",
+    "zh-Hans": "选择已安装的 %@ 官方 CLI 可执行文件。",
+    "ja": "インストール済みの公式 %@ CLI 実行ファイルを選択してください。"
+  },
+  "检查中": {
+    "en": "Checking",
+    "zh-Hans": "检查中",
+    "ja": "確認中"
+  },
+  "让收词适合你的阅读习惯。": {
+    "en": "Make capture fit your reading habits.",
+    "zh-Hans": "让收词适合你的阅读习惯。",
+    "ja": "読書スタイルに合わせて取り込みを設定します。"
+  },
+  "语言": {
+    "en": "Language",
+    "zh-Hans": "语言",
+    "ja": "言語"
+  },
+  "界面语言": {
+    "en": "Interface language",
+    "zh-Hans": "界面语言",
+    "ja": "表示言語"
+  },
+  "释义语言": {
+    "en": "Explanation language",
+    "zh-Hans": "释义语言",
+    "ja": "意味の説明言語"
+  },
+  "跟随系统": {
+    "en": "Follow system",
+    "zh-Hans": "跟随系统",
+    "ja": "システムに従う"
+  },
+  "与界面一致": {
+    "en": "Same as interface",
+    "zh-Hans": "与界面一致",
+    "ja": "表示言語と同じ"
+  },
+  "立即生效，也可以随时改回跟随系统。": {
+    "en": "Changes apply immediately. You can switch back to the system language anytime.",
+    "zh-Hans": "立即生效，也可以随时改回跟随系统。",
+    "ja": "変更はすぐに反映されます。いつでもシステムの言語に戻せます。"
+  },
+  "应用": {
+    "en": "Application",
+    "zh-Hans": "应用",
+    "ja": "アプリ"
+  },
+  "在 Dock 中显示图标": {
+    "en": "Show icon in Dock",
+    "zh-Hans": "在 Dock 中显示图标",
+    "ja": "Dock にアイコンを表示"
+  },
+  "立即生效。隐藏后仍可从菜单栏打开窗口。": {
+    "en": "Applies immediately. You can reopen the window from the menu bar when hidden.",
+    "zh-Hans": "立即生效。隐藏后仍可从菜单栏打开窗口。",
+    "ja": "すぐに反映されます。非表示でもメニューバーから開けます。"
+  },
+  "立即生效，隐藏后可从菜单栏打开窗口。": {
+    "en": "Applies immediately; reopen the window from the menu bar when hidden.",
+    "zh-Hans": "立即生效，隐藏后可从菜单栏打开窗口。",
+    "ja": "すぐに反映され、非表示でもメニューバーから開けます。"
+  },
+  "收录到 Anki": {
+    "en": "Add to Anki",
+    "zh-Hans": "收录到 Anki",
+    "ja": "Anki への追加"
+  },
+  "目标牌组": {
+    "en": "Target deck",
+    "zh-Hans": "目标牌组",
+    "ja": "追加先デッキ"
+  },
+  "目标牌组名称": {
+    "en": "Target deck name",
+    "zh-Hans": "目标牌组名称",
+    "ja": "追加先のデッキ名"
+  },
+  "请选择": {
+    "en": "Choose…",
+    "zh-Hans": "请选择",
+    "ja": "選択してください"
+  },
+  "生成后直接加入牌组": {
+    "en": "Add generated cards automatically",
+    "zh-Hans": "生成后直接加入牌组",
+    "ja": "生成後にデッキへ自動追加"
+  },
+  "后台完成制卡与收录，成功后显示提示。": {
+    "en": "Generate and add cards in the background, then show a confirmation.",
+    "zh-Hans": "后台完成制卡与收录，成功后显示提示。",
+    "ja": "バックグラウンドで生成・追加し、完了を通知します。"
+  },
+  "先在最近收录中预览、编辑，再确认加入。": {
+    "en": "Review and edit in Recent captures before confirming.",
+    "zh-Hans": "先在最近收录中预览、编辑，再确认加入。",
+    "ja": "最近の取り込みで確認・編集してから追加します。"
+  },
+  "关闭后，生成的字卡需要先预览确认。": {
+    "en": "When disabled, generated cards need your review before adding.",
+    "zh-Hans": "关闭后，生成的字卡需要先预览确认。",
+    "ja": "オフの場合は、生成したカードの確認が必要です。"
+  },
+  "Anki 连接与安装帮助": {
+    "en": "Anki connection & setup",
+    "zh-Hans": "Anki 连接与安装帮助",
+    "ja": "Anki の接続・設定ガイド"
+  },
+  "正在检查…": {
+    "en": "Checking…",
+    "zh-Hans": "正在检查…",
+    "ja": "確認中…"
+  },
+  "刷新牌组与连接": {
+    "en": "Refresh decks & connections",
+    "zh-Hans": "刷新牌组与连接",
+    "ja": "デッキ・接続を更新"
+  },
+  "安装 AnkiConnect": {
+    "en": "Install AnkiConnect",
+    "zh-Hans": "安装 AnkiConnect",
+    "ja": "AnkiConnect をインストール"
+  },
+  "Anki → 工具 → 插件 → 获取插件，输入 2055492159，安装后重启 Anki。": {
+    "en": "Anki → Tools → Add-ons → Get Add-ons. Enter 2055492159, install, then restart Anki.",
+    "zh-Hans": "Anki → 工具 → 插件 → 获取插件，输入 2055492159，安装后重启 Anki。",
+    "ja": "Anki → ツール → アドオン → アドオンを取得で 2055492159 を入力し、インストール後に Anki を再起動します。"
+  },
+  "制卡偏好": {
+    "en": "Card preferences",
+    "zh-Hans": "制卡偏好",
+    "ja": "カードの設定"
+  },
+  "当前服务": {
+    "en": "Current provider",
+    "zh-Hans": "当前服务",
+    "ja": "現在のサービス"
+  },
+  "额外制卡偏好": {
+    "en": "Additional instructions",
+    "zh-Hans": "额外制卡偏好",
+    "ja": "追加の指示"
+  },
+  "例如：优先使用学术语境，例句尽量简短。留空使用默认制卡说明。": {
+    "en": "For example: prefer academic contexts and short examples. Leave blank for the default instructions.",
+    "zh-Hans": "例如：优先使用学术语境，例句尽量简短。留空使用默认制卡说明。",
+    "ja": "例：学術的な文脈を優先し、例文は短く。空欄で既定の指示を使用します。"
+  },
+  "自动识别词条语言，按所选语言生成释义。支持单词、短语和简短概念。": {
+    "en": "Detect the source language automatically and explain it in your chosen language. Supports words, phrases, and short concepts.",
+    "zh-Hans": "自动识别词条语言，按所选语言生成释义。支持单词、短语和简短概念。",
+    "ja": "原文の言語を自動判定し、選択した言語で説明します。単語・フレーズ・短い概念に対応します。"
+  },
+  "快捷键与权限": {
+    "en": "Shortcut & permissions",
+    "zh-Hans": "快捷键与权限",
+    "ja": "ショートカット・権限"
+  },
+  "辅助功能已允许": {
+    "en": "Accessibility allowed",
+    "zh-Hans": "辅助功能已允许",
+    "ja": "アクセシビリティ許可済み"
+  },
+  "辅助功能尚未允许": {
+    "en": "Accessibility not allowed",
+    "zh-Hans": "辅助功能尚未允许",
+    "ja": "アクセシビリティ未許可"
+  },
+  "打开权限设置": {
+    "en": "Open permission settings",
+    "zh-Hans": "打开权限设置",
+    "ja": "権限設定を開く"
+  },
+  "高级设置": {
+    "en": "Advanced",
+    "zh-Hans": "高级设置",
+    "ja": "詳細設定"
+  },
+  "AnkiConnect 地址": {
+    "en": "AnkiConnect address",
+    "zh-Hans": "AnkiConnect 地址",
+    "ja": "AnkiConnect のアドレス"
+  },
+  "AnkiConnect API Key（如有）": {
+    "en": "AnkiConnect API key (optional)",
+    "zh-Hans": "AnkiConnect API Key（如有）",
+    "ja": "AnkiConnect API キー（任意）"
+  },
+  "专用笔记类型": {
+    "en": "Dedicated note type",
+    "zh-Hans": "专用笔记类型",
+    "ja": "専用ノートタイプ"
+  },
+  "生成超时": {
+    "en": "Generation timeout",
+    "zh-Hans": "生成超时",
+    "ja": "生成のタイムアウト"
+  },
+  "秒": {
+    "en": "seconds",
+    "zh-Hans": "秒",
+    "ja": "秒"
+  },
+  "打开本地数据目录": {
+    "en": "Open local data folder",
+    "zh-Hans": "打开本地数据目录",
+    "ja": "ローカルデータフォルダを開く"
+  },
+  "有尚未保存的更改": {
+    "en": "You have unsaved changes",
+    "zh-Hans": "有尚未保存的更改",
+    "ja": "未保存の変更があります"
+  },
+  "设置已保存": {
+    "en": "Settings saved",
+    "zh-Hans": "设置已保存",
+    "ja": "設定を保存しました"
+  },
+  "设置已保存。": {
+    "en": "Settings saved.",
+    "zh-Hans": "设置已保存。",
+    "ja": "設定を保存しました。"
+  },
+  "保存设置": {
+    "en": "Save settings",
+    "zh-Hans": "保存设置",
+    "ja": "設定を保存"
+  },
+  "无法启动": {
+    "en": "Unable to start",
+    "zh-Hans": "无法启动",
+    "ja": "起動できません"
+  },
+  "本地数据不可用": {
+    "en": "Local data unavailable",
+    "zh-Hans": "本地数据不可用",
+    "ja": "ローカルデータを利用できません"
+  },
+  "启动失败": {
+    "en": "Startup failed",
+    "zh-Hans": "启动失败",
+    "ja": "起動に失敗しました"
+  },
+  "退出": {
+    "en": "Quit",
+    "zh-Hans": "退出",
+    "ja": "終了"
+  },
+  "退出 Anki Capture": {
+    "en": "Quit Anki Capture",
+    "zh-Hans": "退出 Anki Capture",
+    "ja": "Anki Capture を終了"
+  },
+  "导航": {
+    "en": "Navigate",
+    "zh-Hans": "导航",
+    "ja": "移動"
+  },
+  "目标：%@": {
+    "en": "Deck: %@",
+    "zh-Hans": "目标：%@",
+    "ja": "デッキ：%@"
+  },
+  "打开收词窗口": {
+    "en": "Open capture window",
+    "zh-Hans": "打开收词窗口",
+    "ja": "取り込みウインドウを開く"
+  },
+  "设置…": {
+    "en": "Settings…",
+    "zh-Hans": "设置…",
+    "ja": "設定…"
+  },
+  "在 Dock 中显示": {
+    "en": "Show in Dock",
+    "zh-Hans": "在 Dock 中显示",
+    "ja": "Dock に表示"
+  },
+  "重新检查连接": {
+    "en": "Check connections again",
+    "zh-Hans": "重新检查连接",
+    "ja": "接続を再確認"
+  },
+  "选中一个单词或短语，按快捷键收词。": {
+    "en": "Select a word or phrase and press the capture shortcut.",
+    "zh-Hans": "选中一个单词或短语，按快捷键收词。",
+    "ja": "単語・フレーズを選択してショートカットで取り込めます。"
+  },
+  "在终端完成 %@ 登录后，返回 AI 连接页面刷新。": {
+    "en": "Finish signing in to %@ in Terminal, then refresh AI Connections.",
+    "zh-Hans": "在终端完成 %@ 登录后，返回 AI 连接页面刷新。",
+    "ja": "ターミナルで %@ にログインした後、AI 接続を更新してください。"
+  },
+  "无法打开终端。可以复制登录命令，在终端中手动执行。": {
+    "en": "Could not open Terminal. Copy the sign-in command and run it in your terminal.",
+    "zh-Hans": "无法打开终端。可以复制登录命令，在终端中手动执行。",
+    "ja": "ターミナルを開けませんでした。ログインコマンドをコピーして手動で実行してください。"
+  },
+  "已撤销：%@": {
+    "en": "Undone: %@",
+    "zh-Hans": "已撤销：%@",
+    "ja": "取り消しました：%@"
+  },
+  "选词快捷键": {
+    "en": "Capture shortcut",
+    "zh-Hans": "选词快捷键",
+    "ja": "取り込みショートカット"
+  },
+  "设置全局快捷键": {
+    "en": "Set global shortcut",
+    "zh-Hans": "设置全局快捷键",
+    "ja": "グローバルショートカットを設定"
+  },
+  "正在录制": {
+    "en": "Recording shortcut",
+    "zh-Hans": "正在录制",
+    "ja": "ショートカット入力待ち"
+  },
+  "按下快捷键 · Esc 取消": {
+    "en": "Press shortcut · Esc to cancel",
+    "zh-Hans": "按下快捷键 · Esc 取消",
+    "ja": "キーを入力 · Esc でキャンセル"
+  },
+  "请至少包含 Command、Option 或 Control。": {
+    "en": "Include Command, Option, or Control.",
+    "zh-Hans": "请至少包含 Command、Option 或 Control。",
+    "ja": "Command・Option・Control のいずれかを含めてください。"
+  },
+  "无法注册快捷键监听（%d）。": {
+    "en": "Could not register the shortcut handler (%d).",
+    "zh-Hans": "无法注册快捷键监听（%d）。",
+    "ja": "ショートカットの監視を登録できませんでした（%d）。"
+  },
+  "快捷键可能已被其他应用占用，请重新设置（%d）。": {
+    "en": "The shortcut may be in use by another app. Choose another (%d).",
+    "zh-Hans": "快捷键可能已被其他应用占用，请重新设置（%d）。",
+    "ja": "他のアプリが使用中の可能性があります。別のキーを設定してください（%d）。"
+  },
+  "请先在系统设置 → 隐私与安全性 → 辅助功能中允许 Anki Capture。": {
+    "en": "Allow Anki Capture in System Settings → Privacy & Security → Accessibility.",
+    "zh-Hans": "请先在系统设置 → 隐私与安全性 → 辅助功能中允许 Anki Capture。",
+    "ja": "システム設定 → プライバシーとセキュリティ → アクセシビリティで Anki Capture を許可してください。"
+  },
+  "请先回到阅读器选中单词，再按全局快捷键。也可以在这里手动输入。": {
+    "en": "Select text in your reader first, then press the global shortcut. You can also type it here.",
+    "zh-Hans": "请先回到阅读器选中单词，再按全局快捷键。也可以在这里手动输入。",
+    "ja": "リーダーでテキストを選択してからショートカットを押してください。ここに入力することもできます。"
+  },
+  "前台应用已切换，请重新选词。": {
+    "en": "The frontmost app changed. Please select the text again.",
+    "zh-Hans": "前台应用已切换，请重新选词。",
+    "ja": "最前面のアプリが変わりました。もう一度選択してください。"
+  },
+  "复制期间应用已切换，请重新选词。": {
+    "en": "The app changed during copying. Please select the text again.",
+    "zh-Hans": "复制期间应用已切换，请重新选词。",
+    "ja": "コピー中にアプリが変わりました。もう一度選択してください。"
+  },
+  "无法发送复制快捷键。": {
+    "en": "Could not send the copy shortcut.",
+    "zh-Hans": "无法发送复制快捷键。",
+    "ja": "コピーショートカットを送信できませんでした。"
+  },
+  "无法获取选中的文本。": {
+    "en": "Could not read the selected text.",
+    "zh-Hans": "无法获取选中的文本。",
+    "ja": "選択したテキストを読み取れませんでした。"
+  },
+  "未读到新选区。请确认选中了文本；也可复制后在窗口中手动添加。": {
+    "en": "No new selection was read. Select text, or copy and paste it into the window.",
+    "zh-Hans": "未读到新选区。请确认选中了文本；也可复制后在窗口中手动添加。",
+    "ja": "新しい選択範囲を取得できませんでした。選択し直すか、ウインドウにコピーして追加してください。"
+  },
+  "选区不是可复制的文本。扫描 PDF 可先在 PDF Expert 中进行 OCR。": {
+    "en": "The selection is not copyable text. Run OCR on scanned PDFs first.",
+    "zh-Hans": "选区不是可复制的文本。扫描 PDF 可先在 PDF Expert 中进行 OCR。",
+    "ja": "選択範囲をテキストとしてコピーできません。スキャンした PDF は先に OCR を実行してください。"
+  },
+  "等待生成": {
+    "en": "Queued",
+    "zh-Hans": "等待生成",
+    "ja": "生成待ち"
+  },
+  "正在生成": {
+    "en": "Generating",
+    "zh-Hans": "正在生成",
+    "ja": "生成中"
+  },
+  "等待预览确认": {
+    "en": "Awaiting review",
+    "zh-Hans": "等待预览确认",
+    "ja": "確認待ち"
+  },
+  "正在写入": {
+    "en": "Saving",
+    "zh-Hans": "正在写入",
+    "ja": "保存中"
+  },
+  "等待 Anki": {
+    "en": "Waiting for Anki",
+    "zh-Hans": "等待 Anki",
+    "ja": "Anki の接続待ち"
+  },
+  "已加入 Anki": {
+    "en": "Added to Anki",
+    "zh-Hans": "已加入 Anki",
+    "ja": "Anki に追加済み"
+  },
+  "已存在": {
+    "en": "Already exists",
+    "zh-Hans": "已存在",
+    "ja": "登録済み"
+  },
+  "处理失败": {
+    "en": "Failed",
+    "zh-Hans": "处理失败",
+    "ja": "失敗"
+  },
+  "已撤销": {
+    "en": "Undone",
+    "zh-Hans": "已撤销",
+    "ja": "取り消し済み"
+  },
+  "尚未安装": {
+    "en": "Not installed",
+    "zh-Hans": "尚未安装",
+    "ja": "未インストール"
+  },
+  "尚未登录": {
+    "en": "Not signed in",
+    "zh-Hans": "尚未登录",
+    "ja": "未ログイン"
+  },
+  "已连接": {
+    "en": "Connected",
+    "zh-Hans": "已连接",
+    "ja": "接続済み"
+  },
+  "等待验证": {
+    "en": "Needs testing",
+    "zh-Hans": "等待验证",
+    "ja": "テスト待ち"
+  },
+  "连接异常": {
+    "en": "Connection issue",
+    "zh-Hans": "连接异常",
+    "ja": "接続エラー"
+  },
+  "先安装官方 CLI，或选择它在本机的位置。": {
+    "en": "Install the official CLI or choose its local executable.",
+    "zh-Hans": "先安装官方 CLI，或选择它在本机的位置。",
+    "ja": "公式 CLI をインストールするか、ローカルの実行ファイルを選択してください。"
+  },
+  "CLI 无法启动，请检查版本及可执行文件路径。": {
+    "en": "The CLI could not start. Check its version and executable path.",
+    "zh-Hans": "CLI 无法启动，请检查版本及可执行文件路径。",
+    "ja": "CLI を起動できません。バージョンと実行ファイルのパスを確認してください。"
+  },
+  "CLI 检查失败，请确认路径、版本和终端运行环境。": {
+    "en": "CLI check failed. Check the path, version, and terminal environment.",
+    "zh-Hans": "CLI 检查失败，请确认路径、版本和终端运行环境。",
+    "ja": "CLI の確認に失敗しました。パス・バージョン・実行環境を確認してください。"
+  },
+  "在官方 CLI 中登录你的账号。": {
+    "en": "Sign in to your account using the official CLI.",
+    "zh-Hans": "在官方 CLI 中登录你的账号。",
+    "ja": "公式 CLI でアカウントにログインしてください。"
+  },
+  "在官方 CLI 完成 Google 登录后，点击验证连接。": {
+    "en": "Sign in with Google in the official CLI, then test the connection.",
+    "zh-Hans": "在官方 CLI 完成 Google 登录后，点击验证连接。",
+    "ja": "公式 CLI で Google にログインし、接続テストを実行してください。"
+  },
+  "已沿用本机 ChatGPT 登录。": {
+    "en": "Using your local ChatGPT sign-in.",
+    "zh-Hans": "已沿用本机 ChatGPT 登录。",
+    "ja": "ローカルの ChatGPT ログインを使用中です。"
+  },
+  "沿用 CLI 的 API Key，按其配置计费。": {
+    "en": "Using the CLI's API key and billing configuration.",
+    "zh-Hans": "沿用 CLI 的 API Key，按其配置计费。",
+    "ja": "CLI の API キーと課金設定を使用します。"
+  },
+  "已沿用本机 CLI 登录与计费配置。": {
+    "en": "Using the local CLI sign-in and billing configuration.",
+    "zh-Hans": "已沿用本机 CLI 登录与计费配置。",
+    "ja": "ローカル CLI のログイン・課金設定を使用中です。"
+  },
+  "已沿用本机 Claude 账号登录。": {
+    "en": "Using your local Claude account sign-in.",
+    "zh-Hans": "已沿用本机 Claude 账号登录。",
+    "ja": "ローカルの Claude アカウントを使用中です。"
+  },
+  "已沿用 CLI 的认证与计费配置。": {
+    "en": "Using the CLI's authentication and billing configuration.",
+    "zh-Hans": "已沿用 CLI 的认证与计费配置。",
+    "ja": "CLI の認証・課金設定を使用中です。"
+  },
+  "当前模型已成功返回字卡。验证不会向 Anki 写入内容。": {
+    "en": "The selected model returned a valid card. Nothing was written to Anki.",
+    "zh-Hans": "当前模型已成功返回字卡。验证不会向 Anki 写入内容。",
+    "ja": "選択したモデルが有効なカードを返しました。Anki への書き込みはありません。"
+  },
+  "尚未完成账号登录。点击连接账号，在官方 CLI 中登录后再验证。": {
+    "en": "Not signed in yet. Use Sign in to finish in the official CLI, then test again.",
+    "zh-Hans": "尚未完成账号登录。点击连接账号，在官方 CLI 中登录后再验证。",
+    "ja": "まだログインしていません。公式 CLI でログインした後、再度テストしてください。"
+  },
+  "请先安装 %@ 官方 CLI，或选择正确的文件位置。": {
+    "en": "Install the official %@ CLI or choose the correct executable.",
+    "zh-Hans": "请先安装 %@ 官方 CLI，或选择正确的文件位置。",
+    "ja": "公式 %@ CLI をインストールするか、正しいファイルを選択してください。"
+  },
+  "请在官方 CLI 中完成登录，然后返回应用刷新连接。": {
+    "en": "Sign in using the official CLI, then refresh connections in the app.",
+    "zh-Hans": "请在官方 CLI 中完成登录，然后返回应用刷新连接。",
+    "ja": "公式 CLI でログイン後、アプリに戻って接続を更新してください。"
+  },
+  "登录流程已结束。返回 Anki Capture，点击刷新或验证连接。": {
+    "en": "Sign-in flow finished. Return to Anki Capture and refresh or test the connection.",
+    "zh-Hans": "登录流程已结束。返回 Anki Capture，点击刷新或验证连接。",
+    "ja": "ログイン処理が終了しました。Anki Capture に戻り、接続の更新かテストを実行してください。"
+  },
+  "按回车关闭此窗口。": {
+    "en": "Press Return to close this window.",
+    "zh-Hans": "按回车关闭此窗口。",
+    "ja": "Return キーでこのウインドウを閉じます。"
+  },
+  "请选择一个单词或短语（最多 200 个字符、25 个单词）。": {
+    "en": "Select a word, phrase, or short concept (up to 200 characters and 25 words).",
+    "zh-Hans": "请选择一个单词或短语（最多 200 个字符、25 个单词）。",
+    "ja": "単語・フレーズ・短い概念を選択してください（最大 200 文字・25 語）。"
+  },
+  "上下文或来源过长。请缩短后重试。": {
+    "en": "The context or source is too long. Shorten it and try again.",
+    "zh-Hans": "上下文或来源过长。请缩短后重试。",
+    "ja": "文脈または出典が長すぎます。短くして再試行してください。"
+  },
+  "AI 返回的字卡缺少必要字段。": {
+    "en": "The AI card is missing required fields.",
+    "zh-Hans": "AI 返回的字卡缺少必要字段。",
+    "ja": "AI が返したカードに必須項目がありません。"
+  },
+  "AI 返回的字卡字段过长。": {
+    "en": "The AI card contains fields that are too long.",
+    "zh-Hans": "AI 返回的字卡字段过长。",
+    "ja": "AI が返したカードの項目が長すぎます。"
+  },
+  "AI 返回的词条与选中的内容不一致，已保留任务。": {
+    "en": "The AI returned a different term. Your capture has been kept.",
+    "zh-Hans": "AI 返回的词条与选中的内容不一致，已保留任务。",
+    "ja": "AI が異なる語句を返しました。取り込みは保存されています。"
+  },
+  "AnkiConnect HTTP 响应异常。": {
+    "en": "Unexpected AnkiConnect HTTP response.",
+    "zh-Hans": "AnkiConnect HTTP 响应异常。",
+    "ja": "AnkiConnect の HTTP 応答が不正です。"
+  },
+  "AnkiConnect 地址须为本机 HTTP 地址，例如 http://127.0.0.1:8765。": {
+    "en": "AnkiConnect must use a local HTTP address, such as http://127.0.0.1:8765.",
+    "zh-Hans": "AnkiConnect 地址须为本机 HTTP 地址，例如 http://127.0.0.1:8765。",
+    "ja": "AnkiConnect には http://127.0.0.1:8765 などのローカル HTTP アドレスを使用してください。"
+  },
+  "请检查超时、牌组、模板或模型设置。": {
+    "en": "Check the timeout, deck, note type, and model settings.",
+    "zh-Hans": "请检查超时、牌组、模板或模型设置。",
+    "ja": "タイムアウト・デッキ・ノートタイプ・モデルの設定を確認してください。"
+  },
+  "无法连接 AnkiConnect。请打开 Anki，安装插件 2055492159 并重启。任务已保留。": {
+    "en": "Could not connect to AnkiConnect. Open Anki, install add-on 2055492159, and restart Anki. Your capture has been kept.",
+    "zh-Hans": "无法连接 AnkiConnect。请打开 Anki，安装插件 2055492159 并重启。任务已保留。",
+    "ja": "AnkiConnect に接続できません。Anki でアドオン 2055492159 をインストールし、再起動してください。取り込みは保存されています。"
+  },
+  "请求超时。": {
+    "en": "The request timed out.",
+    "zh-Hans": "请求超时。",
+    "ja": "リクエストがタイムアウトしました。"
+  },
+  "本地服务未返回 AnkiConnect API v6 响应。": {
+    "en": "The local service did not return an AnkiConnect API v6 response.",
+    "zh-Hans": "本地服务未返回 AnkiConnect API v6 响应。",
+    "ja": "ローカルサービスが AnkiConnect API v6 の応答を返しませんでした。"
+  },
+  "笔记类型“%@”的字段与 Anki Capture 不匹配，请设置一个新的专用笔记类型名称。": {
+    "en": "The fields in note type “%@” do not match Anki Capture. Choose a new dedicated note type name.",
+    "zh-Hans": "笔记类型“%@”的字段与 Anki Capture 不匹配，请设置一个新的专用笔记类型名称。",
+    "ja": "ノートタイプ「%@」の項目が Anki Capture と一致しません。新しい専用ノートタイプ名を設定してください。"
+  },
+  "目标牌组“%@”不存在，请在设置中重新选择。": {
+    "en": "The deck “%@” does not exist. Choose another in Settings.",
+    "zh-Hans": "目标牌组“%@”不存在，请在设置中重新选择。",
+    "ja": "デッキ「%@」が存在しません。設定で選択し直してください。"
+  },
+  "只能撤销由本任务新建的字卡。": {
+    "en": "Only cards created by this capture can be undone.",
+    "zh-Hans": "只能撤销由本任务新建的字卡。",
+    "ja": "この取り込みで新規作成したカードだけを取り消せます。"
+  },
+  "无法确认这条笔记属于本任务，请在 Anki 中查看。": {
+    "en": "Could not confirm that this note belongs to the capture. Check it in Anki.",
+    "zh-Hans": "无法确认这条笔记属于本任务，请在 Anki 中查看。",
+    "ja": "このノートが取り込みに対応するか確認できません。Anki で確認してください。"
+  },
+  "这张字卡已产生复习记录，请在 Anki 中管理。": {
+    "en": "This card has review history. Manage it in Anki.",
+    "zh-Hans": "这张字卡已产生复习记录，请在 Anki 中管理。",
+    "ja": "このカードには学習履歴があります。Anki で管理してください。"
+  },
+  "无法打开本地任务数据库。": {
+    "en": "Could not open the local capture database.",
+    "zh-Hans": "无法打开本地任务数据库。",
+    "ja": "ローカルの取り込みデータベースを開けませんでした。"
+  },
+  "任务数据库错误：%@": {
+    "en": "Capture database error: %@",
+    "zh-Hans": "任务数据库错误：%@",
+    "ja": "取り込みデータベースのエラー：%@"
+  },
+  "请先选择目标 Anki 牌组。": {
+    "en": "Choose a target Anki deck first.",
+    "zh-Hans": "请先选择目标 Anki 牌组。",
+    "ja": "先に追加先の Anki デッキを選択してください。"
+  },
+  "找不到任务。": {
+    "en": "Capture not found.",
+    "zh-Hans": "找不到任务。",
+    "ja": "取り込みが見つかりません。"
+  },
+  "这个任务当前不需要重试。": {
+    "en": "This capture does not need to be retried.",
+    "zh-Hans": "这个任务当前不需要重试。",
+    "ja": "この取り込みは再試行する必要がありません。"
+  },
+  "只有待确认的字卡可以在这里编辑。": {
+    "en": "Only cards awaiting review can be edited here.",
+    "zh-Hans": "只有待确认的字卡可以在这里编辑。",
+    "ja": "ここでは確認待ちのカードのみ編集できます。"
+  },
+  "额度或速率限制，请等待恢复或手动切换服务。": {
+    "en": "Usage or rate limit reached. Wait or choose another provider.",
+    "zh-Hans": "额度或速率限制，请等待恢复或手动切换服务。",
+    "ja": "利用枠またはレート制限に達しました。待機するかサービスを切り替えてください。"
+  },
+  "请先在终端完成这个 CLI 的登录。": {
+    "en": "Sign in to this CLI in Terminal first.",
+    "zh-Hans": "请先在终端完成这个 CLI 的登录。",
+    "ja": "先にターミナルでこの CLI にログインしてください。"
+  },
+  "请先在终端完成这个 CLI 的登录": {
+    "en": "Sign in to this CLI in Terminal first",
+    "zh-Hans": "请先在终端完成这个 CLI 的登录",
+    "ja": "先にターミナルでこの CLI にログインしてください"
+  },
+  "请检查模型名称及当前账号的模型权限。": {
+    "en": "Check the model name and your account's model access.",
+    "zh-Hans": "请检查模型名称及当前账号的模型权限。",
+    "ja": "モデル名とアカウントのモデル利用権限を確認してください。"
+  },
+  "请运行 doctor 检查登录、CLI 版本和网络。": {
+    "en": "Run doctor to check sign-in, CLI version, and network access.",
+    "zh-Hans": "请运行 doctor 检查登录、CLI 版本和网络。",
+    "ja": "doctor でログイン・CLI バージョン・ネットワークを確認してください。"
+  },
+  "%@ 调用失败（退出码 %d）。%@": {
+    "en": "%@ failed (exit code %d). %@",
+    "zh-Hans": "%@ 调用失败（退出码 %d）。%@",
+    "ja": "%@ の呼び出しに失敗しました（終了コード %d）。%@"
+  },
+  "Codex 没有返回字卡 JSON。": {
+    "en": "Codex did not return card JSON.",
+    "zh-Hans": "Codex 没有返回字卡 JSON。",
+    "ja": "Codex がカードの JSON を返しませんでした。"
+  },
+  "AI 字卡格式不符合要求：%@": {
+    "en": "Invalid AI card format: %@",
+    "zh-Hans": "AI 字卡格式不符合要求：%@",
+    "ja": "AI カードの形式が不正です：%@"
+  },
+  "Claude Code 没有返回 structured_output。请检查模型、登录或 CLI 版本。": {
+    "en": "Claude Code did not return structured_output. Check the model, sign-in, and CLI version.",
+    "zh-Hans": "Claude Code 没有返回 structured_output。请检查模型、登录或 CLI 版本。",
+    "ja": "Claude Code が structured_output を返しませんでした。モデル・ログイン・CLI バージョンを確認してください。"
+  },
+  "%@ 没有返回字卡内容。请检查登录、额度和模型。": {
+    "en": "%@ did not return a card. Check sign-in, quota, and model.",
+    "zh-Hans": "%@ 没有返回字卡内容。请检查登录、额度和模型。",
+    "ja": "%@ がカードを返しませんでした。ログイン・利用枠・モデルを確認してください。"
+  },
+  "%@ 没有返回有效的 JSON。请检查 CLI 版本与登录。": {
+    "en": "%@ did not return valid JSON. Check the CLI version and sign-in.",
+    "zh-Hans": "%@ 没有返回有效的 JSON。请检查 CLI 版本与登录。",
+    "ja": "%@ が有効な JSON を返しませんでした。CLI バージョンとログインを確認してください。"
+  },
+  "找不到可执行的 CLI：%@。请在设置中选择正确路径。": {
+    "en": "CLI executable not found: %@. Choose the correct path in Settings.",
+    "zh-Hans": "找不到可执行的 CLI：%@。请在设置中选择正确路径。",
+    "ja": "CLI 実行ファイルが見つかりません：%@。設定で正しいパスを選択してください。"
+  },
+  "AI CLI 超时（%d 秒）。任务已保留，可稍后重试。": {
+    "en": "AI CLI timed out after %d seconds. Your capture has been kept for retry.",
+    "zh-Hans": "AI CLI 超时（%d 秒）。任务已保留，可稍后重试。",
+    "ja": "AI CLI が %d 秒でタイムアウトしました。取り込みは再試行のため保存されています。"
+  },
+  "CLI 输出过长，请检查 CLI 配置。": {
+    "en": "CLI output is too long. Check the CLI configuration.",
+    "zh-Hans": "CLI 输出过长，请检查 CLI 配置。",
+    "ja": "CLI の出力が長すぎます。CLI の設定を確認してください。"
+  },
+  "尚未选择": {
+    "en": "Not selected",
+    "zh-Hans": "尚未选择",
+    "ja": "未選択"
+  },
+  " 登录": {
+    "en": " sign-in",
+    "zh-Hans": " 登录",
+    "ja": " ログイン"
+  }
+}

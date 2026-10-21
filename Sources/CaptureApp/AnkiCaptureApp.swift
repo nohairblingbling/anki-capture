@@ -35,6 +35,7 @@ struct AnkiCaptureApp: App {
         Window("Anki Capture", id: "main") {
             if let model {
                 AppRootView(model: model)
+                    .environment(\.locale, model.configuration.interfaceLanguage.locale)
                     .task { delegate.model = model; model.start() }
             } else {
                 ContentUnavailableView("无法启动", systemImage: "exclamationmark.triangle", description: Text(startupError ?? "本地数据不可用"))
@@ -46,25 +47,28 @@ struct AnkiCaptureApp: App {
         .windowToolbarStyle(.unified)
         .commands {
             CommandGroup(replacing: .newItem) {}
-            CommandMenu("导航") {
+            CommandMenu(L10n.text("导航")) {
                 if let model {
-                    Button("收词") { model.page = .capture; model.openMainWindow?() }
+                    Button(L10n.text("收词")) { model.page = .capture; model.openMainWindow?() }
                         .keyboardShortcut("1", modifiers: .command)
-                    Button("AI 连接") { model.page = .connections; model.openMainWindow?() }
+                    Button(L10n.text("AI 连接")) { model.page = .connections; model.openMainWindow?() }
                         .keyboardShortcut("2", modifiers: .command)
-                    Button("偏好设置") { model.page = .settings; model.openMainWindow?() }
+                    Button(L10n.text("偏好设置")) { model.page = .settings; model.openMainWindow?() }
                         .keyboardShortcut("3", modifiers: .command)
                 }
             }
         }
         MenuBarExtra {
-            if let model { CaptureMenu(model: model) }
+            if let model { CaptureMenu(model: model).environment(\.locale, model.configuration.interfaceLanguage.locale) }
             else { Text(startupError ?? "启动失败"); Button("退出") { NSApp.terminate(nil) } }
         } label: {
             Label("Anki Capture", systemImage: model?.pending ?? 0 > 0 ? "text.badge.checkmark" : "character.book.closed")
         }
         Settings {
-            if let model { SettingsView(model: model).frame(width: 650, height: 700) }
+            if let model {
+                SettingsView(model: model).frame(width: 650, height: 700)
+                    .environment(\.locale, model.configuration.interfaceLanguage.locale)
+            }
         }
     }
 }
@@ -74,8 +78,8 @@ private struct CaptureMenu: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openSettings) private var openSettings
     var body: some View {
-        Text(model.configuration.deck.isEmpty ? "尚未选择牌组" : "目标：\(model.configuration.deck)")
-        Text("今天添加 \(model.savedToday) · 待处理 \(model.pending)")
+        Text(model.configuration.deck.isEmpty ? L10n.text("尚未选择牌组") : L10n.format("目标：%@", model.configuration.deck))
+        Text(L10n.format("今天 %lld · 待处理 %lld", model.savedToday, model.pending))
         Divider()
         Button("打开收词窗口") { model.page = .capture; openWindow(id: "main"); NSApp.activate() }
         Button("AI 连接…") { model.page = .connections; openWindow(id: "main"); NSApp.activate() }
@@ -83,7 +87,7 @@ private struct CaptureMenu: View {
         Button("设置…") { openSettings(); NSApp.activate() }
         Button("重新检查连接") { Task { await model.checkConnections() } }
         Divider()
-        Text(String(model.message.prefix(65)))
+        Text(LocalizedStringKey(String(model.message.prefix(65))))
         Divider()
         Button("退出 Anki Capture") { NSApp.terminate(nil) }.keyboardShortcut("q")
     }

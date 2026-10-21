@@ -4,10 +4,11 @@ import CryptoKit
 public enum CaptureError: LocalizedError {
     case invalid(String)
     case process(String)
+    case authentication(String)
     case unavailable(String)
     public var errorDescription: String? {
         switch self {
-        case .invalid(let message), .process(let message), .unavailable(let message): return message
+        case .invalid(let message), .process(let message), .authentication(let message), .unavailable(let message): return L10n.text(message)
         }
     }
 }
@@ -97,6 +98,7 @@ public struct VocabularyCard: Codable, Equatable, Sendable {
         return self
     }
     public func captureKey(deck: String, noteType: String) -> String {
+        // Keep the historical namespace for existing notes; this is not a language restriction.
         "AC1-" + stableHash(["en", normalized(lemma), normalized(senseKey), deck, noteType].joined(separator: "\u{0}"))
     }
     public static let schema = #"""
@@ -136,6 +138,8 @@ public struct CaptureJob: Identifiable, Codable, Sendable {
     public var createdAt: Date
     public var updatedAt: Date
     public var attempts: Int
+    /// Nil in pre-0.3 jobs: preserve their original Chinese explanation behavior.
+    public var explanationLanguage: AppLanguage? = nil
 }
 
 public func stableHash(_ text: String) -> String {

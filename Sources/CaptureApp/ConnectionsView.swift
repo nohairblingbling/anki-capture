@@ -79,7 +79,7 @@ private struct ProviderConnectionView: View {
                         Spacer(minLength: 8)
                         ConnectionBadge(state: status?.state, busy: verifying)
                     }
-                    Text(status?.detail ?? "正在检查本机 CLI…")
+                    Text(LocalizedStringKey(status?.detail ?? "正在检查本机 CLI…"))
                         .font(.callout).foregroundStyle(.secondary).lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -88,17 +88,17 @@ private struct ProviderConnectionView: View {
                 if installed {
                     if status?.state == .connected {
                         Button("重新登录") { login() }
-                            .accessibilityLabel("\(provider.title) 连接账号")
+                            .accessibilityLabel(L10n.format("%@ 连接账号", provider.title))
                     } else {
                         Button("连接账号") { login() }.buttonStyle(.borderedProminent)
-                            .accessibilityLabel("\(provider.title) 连接账号")
+                            .accessibilityLabel(L10n.format("%@ 连接账号", provider.title))
                     }
                     Button { verify() } label: {
                         HStack(spacing: 6) {
                             if verifying { ProgressView().controlSize(.mini) }
-                            Text(verifying ? "正在验证" : "验证连接")
+                            Text(LocalizedStringKey(verifying ? "正在验证" : "验证连接"))
                         }
-                    }.disabled(verifying).accessibilityLabel("\(provider.title) 验证连接")
+                    }.disabled(verifying).accessibilityLabel(L10n.format("%@ 验证连接", provider.title))
                 } else {
                     Link("安装官方 CLI", destination: provider.installationURL).buttonStyle(.borderedProminent)
                 }
@@ -110,8 +110,8 @@ private struct ProviderConnectionView: View {
                     }
                 }
                 .buttonStyle(.borderless).font(.caption)
-                .accessibilityLabel("\(provider.title) 模型与连接设置")
-                .accessibilityValue(expanded ? "已展开" : "已折叠")
+                .accessibilityLabel(L10n.format("%@ 模型与连接设置", provider.title))
+                .accessibilityValue(Text(LocalizedStringKey(expanded ? "已展开" : "已折叠")))
             }.padding(.leading, 48)
             if expanded { configurationEditor.padding(.top, 4) }
         }
@@ -126,22 +126,22 @@ private struct ProviderConnectionView: View {
             VStack(alignment: .leading, spacing: 8) {
                 FieldCaption(title: "制卡模型")
                 HStack(spacing: 10) {
-                    Picker("\(provider.title) 模型", selection: $selectedModel) {
+                    Picker(L10n.format("%@ 模型", provider.title), selection: $selectedModel) {
                         Text("沿用 CLI 默认模型").tag("")
                         ForEach(modelOptions, id: \.self) { Text($0).tag($0) }
                     }.labelsHidden().frame(maxWidth: 250)
                     Spacer()
-                    Button(saved ? "已保存" : "保存配置") { saved = persist() }
-                        .disabled(saved).accessibilityLabel("保存 \(provider.title) 配置")
+                    Button(LocalizedStringKey(saved ? "已保存" : "保存配置")) { saved = persist() }
+                        .disabled(saved).accessibilityLabel(L10n.format("保存 %@ 配置", provider.title))
                 }
                 TextField("自定义模型 ID，留空使用 CLI 默认值", text: $selectedModel)
-                    .textFieldStyle(.roundedBorder).accessibilityLabel("\(provider.title) 自定义模型 ID")
+                    .textFieldStyle(.roundedBorder).accessibilityLabel(L10n.format("%@ 自定义模型 ID", provider.title))
             }
             DisclosureGroup("CLI 路径与登录命令", isExpanded: $advanced) {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        TextField("\(provider.commandName) 可执行文件路径", text: $executable).textFieldStyle(.roundedBorder)
-                            .accessibilityLabel("\(provider.title) CLI 路径")
+                        TextField(L10n.format("%@ 可执行文件路径", provider.commandName), text: $executable).textFieldStyle(.roundedBorder)
+                            .accessibilityLabel(L10n.format("%@ CLI 路径", provider.title))
                         Button("选择文件…") { selectExecutable() }
                     }
                     HStack(alignment: .top) {
@@ -177,7 +177,7 @@ private struct ProviderConnectionView: View {
     private func selectExecutable() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = false; panel.allowsMultipleSelection = false
-        panel.message = "选择已安装的 \(provider.title) 官方 CLI 可执行文件。"
+        panel.message = L10n.format("选择已安装的 %@ 官方 CLI 可执行文件。", provider.title)
         panel.begin { result in
             guard result == .OK, let url = panel.url else { return }
             executable = url.path
