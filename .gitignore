@@ -1,3 +1,26 @@
+# Public repository allowlist. Local docs, plans, skills and drafts stay untracked.
+/*
+!/.gitignore
+!/.github/
+!/App/
+!/Sources/
+!/Tests/
+!/assets/
+!/scripts/
+!/Package.swift
+!/Package.resolved
+!/LICENSE
+!/README.md
+!/README.zh-CN.md
+
+# Keep only the maintained build, install, packaging and translation scripts public.
+/scripts/*
+!/scripts/build-app.sh
+!/scripts/check-localizations.py
+!/scripts/install.sh
+!/scripts/make-icon.swift
+!/scripts/package-release.sh
+
 .build/
 .swiftpm/
 dist/
