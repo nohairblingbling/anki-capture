@@ -9,6 +9,11 @@ public struct AnkiWriteResult: Sendable {
     public init(noteID: Int64, duplicate: Bool) { self.noteID = noteID; self.duplicate = duplicate }
 }
 
+public struct AnkiDeck: Codable, Equatable, Sendable {
+    public let id: Int64
+    public let name: String
+}
+
 public struct AnkiClient: AnkiWriting {
     private let endpoint: URL
     private let key: String
@@ -46,6 +51,31 @@ public struct AnkiClient: AnkiWriting {
     public func deckNames() async throws -> [String] {
         let names: [String] = try await call("deckNames")
         return names.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    }
+    public static func validatedDeckName(_ input: String) throws -> String {
+        let components = input.trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: "::").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let name = components.joined(separator: "::").precomposedStringWithCanonicalMapping
+        guard !components.contains(where: \.isEmpty), name.count <= 200,
+              name.rangeOfCharacter(from: .controlCharacters) == nil else {
+            throw CaptureError.invalid("请输入有效的牌组名称（最多 200 个字符），子牌组可用“父牌组::子牌组”。")
+        }
+        return name
+    }
+    public func createDeck(named input: String) async throws -> AnkiDeck {
+        let name = try Self.validatedDeckName(input)
+        do {
+            let id: Int64 = try await call("createDeck", params: ["deck": name])
+            // Resolve Anki's canonical name, including normalization or an already existing deck.
+            let names: [String: Int64] = try await call("deckNamesAndIds")
+            guard id > 0, let canonicalName = names.first(where: { $0.value == id })?.key,
+                  (try? Self.validatedDeckName(canonicalName)) == canonicalName else {
+                throw CaptureError.invalid("Anki 未返回有效牌组，请刷新牌组列表后重试。")
+            }
+            return AnkiDeck(id: id, name: canonicalName)
+        } catch CaptureError.unavailable {
+            throw CaptureError.unavailable("无法连接 AnkiConnect。请打开 Anki 并检查插件，再重试创建牌组。")
+        }
     }
     public static let fields = ["CaptureKey", "Term", "Meaning", "Definition", "PartOfSpeech", "Pronunciation", "Example", "ExampleMeaning", "Context", "Source", "CapturedAt"]
     public func ensureNoteType(_ name: String) async throws {

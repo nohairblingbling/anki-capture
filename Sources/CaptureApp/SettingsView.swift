@@ -86,6 +86,8 @@ struct SettingsView: View {
                             ForEach(Array(Set(model.decks + (draft.deck.isEmpty ? [] : [draft.deck]))).sorted(), id: \.self) { Text($0).tag($0) }
                         }
                     } else { TextField("目标牌组名称", text: $draft.deck) }
+                    DeckCreator(model: model, selectedDeck: $draft.deck,
+                                connectionIsSaved: draft.ankiURL == model.configuration.ankiURL && draft.ankiAPIKey == model.configuration.ankiAPIKey)
                     Toggle(isOn: $draft.autoSave) {
                         VStack(alignment: .leading, spacing: 5) {
                             Text("生成后直接加入牌组")
@@ -176,5 +178,67 @@ struct SettingsView: View {
         config.explanationLanguage = draft.explanationLanguage
         config.learningPreferences = draft.learningPreferences
         return config
+    }
+}
+
+private struct DeckCreator: View {
+    let model: AppModel
+    @Binding var selectedDeck: String
+    let connectionIsSaved: Bool
+    @State private var expanded = false
+    @State private var name = ""
+    @State private var error: String?
+    @State private var createdName: String?
+    @FocusState private var nameFocused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if expanded {
+                TextField("新牌组名称", text: $name).textFieldStyle(.roundedBorder)
+                    .focused($nameFocused).onSubmit { create() }
+                    .disabled(model.creatingDeck)
+                    .onExitCommand { if !model.creatingDeck { expanded = false } }
+                Text("支持“父牌组::子牌组”。创建并选用后立即保存目标牌组。")
+                    .font(.caption).foregroundStyle(.secondary)
+                if !connectionIsSaved {
+                    Text("请先保存 Anki 连接设置，再创建牌组。")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                if let error {
+                    Label { Text(verbatim: error).fixedSize(horizontal: false, vertical: true) }
+                        icon: { Image(systemName: "exclamationmark.circle") }
+                        .font(.callout).foregroundStyle(.red).textSelection(.enabled)
+                }
+                HStack {
+                    Button("取消") { expanded = false }.disabled(model.creatingDeck)
+                    Button(LocalizedStringKey(model.creatingDeck ? "正在创建…" : "创建并选用")) { create() }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(model.creatingDeck || !connectionIsSaved || (try? AnkiClient.validatedDeckName(name)) == nil)
+                }
+            } else {
+                Button { expanded = true; error = nil; createdName = nil; nameFocused = true } label: {
+                    Label("新建牌组…", systemImage: "plus")
+                }.disabled(model.creatingDeck)
+            }
+            if let createdName {
+                Label { Text(verbatim: L10n.format("已创建并选用牌组：%@", createdName)) }
+                    icon: { Image(systemName: "checkmark.circle") }
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }.padding(.vertical, 4)
+    }
+    private func create() {
+        guard !model.creatingDeck, connectionIsSaved else { return }
+        do {
+            let validName = try AnkiClient.validatedDeckName(name)
+            error = nil
+            Task {
+                do {
+                    let created = try await model.createDeck(named: validName)
+                    selectedDeck = created; createdName = created
+                    name = ""; expanded = false
+                } catch { self.error = error.localizedDescription }
+            }
+        } catch { self.error = error.localizedDescription }
     }
 }

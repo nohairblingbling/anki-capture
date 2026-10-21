@@ -11,7 +11,7 @@ struct CommonOptions: ParsableArguments {
 struct AnkiCaptureCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "anki-capture", abstract: "Capture multilingual Anki cards using your local Codex, Claude Code, or Gemini CLI.",
-        version: "0.4.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
+        version: "0.5.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
                                       Generate.self, Add.self, Jobs.self, Retry.self, Undo.self, Run.self], defaultSubcommand: Doctor.self)
 }
 
@@ -118,11 +118,21 @@ struct Configure: ParsableCommand {
 }
 
 struct Decks: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(abstract: "List decks in the current Anki profile.")
+    static let configuration = CommandConfiguration(abstract: "List or create decks in the current Anki profile.")
     @OptionGroup var common: CommonOptions
+    @Option(help: "Create a deck; use Parent::Child for a subdeck. Existing decks are reused.") var create: String?
+    @Flag(help: "Remember the created deck as the capture destination. Requires --create.") var select = false
     mutating func run() async throws {
-        let client = try AnkiClient(config: AppConfiguration.load(from: common.paths))
-        print(try jsonString(await client.deckNames()))
+        guard !select || create != nil else { throw ValidationError("--select requires --create.") }
+        let paths = try common.paths
+        var config = try AppConfiguration.load(from: paths)
+        L10n.language = config.interfaceLanguage
+        let client = try AnkiClient(config: config)
+        if let create {
+            let deck = try await client.createDeck(named: create)
+            if select { config.deck = deck.name; try config.save(to: paths) }
+            print(try jsonString(deck))
+        } else { print(try jsonString(await client.deckNames())) }
     }
 }
 struct Models: ParsableCommand {

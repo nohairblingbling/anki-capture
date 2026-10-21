@@ -23,6 +23,7 @@ final class AppModel {
     var message = "选中一个单词或短语，按快捷键收词。"
     var error: String?
     var checking = false
+    var creatingDeck = false
     var page: AppPage = .capture
     var connections: [ProviderConnection] = []
     var verifyingProviders: Set<AIProvider> = []
@@ -141,6 +142,23 @@ final class AppModel {
         connections = await ProviderConnections.checkAll(config: configuration, paths: paths)
         diagnostics = await Diagnostics.check(config: configuration, paths: paths, connections: connections)
         if let client = try? AnkiClient(config: configuration), let names = try? await client.deckNames() { decks = names }
+    }
+    func createDeck(named name: String) async throws -> String {
+        guard !creatingDeck else { throw CaptureError.invalid("正在创建牌组，请稍候。") }
+        creatingDeck = true; defer { creatingDeck = false }
+        let connection = configuration
+        let deck = try await AnkiClient(config: connection).createDeck(named: name)
+        guard connection.ankiURL == configuration.ankiURL, connection.ankiAPIKey == configuration.ankiAPIKey else {
+            throw CaptureError.invalid("牌组已在原连接中创建。Anki 连接已改变，请刷新后重新选择。")
+        }
+        decks = Array(Set(decks + [deck.name])).sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+        // Select immediately without saving another window's pending form edits.
+        var updated = configuration; updated.deck = deck.name
+        try updated.save(to: paths)
+        configuration = updated
+        message = L10n.format("已创建并选用牌组：%@", deck.name)
+        Task { await checkConnections() }
+        return deck.name
     }
     func applyDockPreference() {
         let policy: NSApplication.ActivationPolicy = configuration.showInDock ? .regular : .accessory

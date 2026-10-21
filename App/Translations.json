@@ -1333,5 +1333,65 @@
     "en": "Confirm your explanation language in Learning preferences first. CLI: configure --explanation-language en, zh-Hans, or ja.",
     "zh-Hans": "请先在学习偏好中确认释义语言。CLI 用户请运行 configure --explanation-language en、zh-Hans 或 ja。",
     "ja": "まず学習設定で説明の言語を確定してください。CLI: configure --explanation-language en、zh-Hans、または ja。"
+  },
+  "请输入有效的牌组名称（最多 200 个字符），子牌组可用“父牌组::子牌组”。": {
+    "en": "Enter a valid deck name (up to 200 characters). Use “Parent::Child” for a subdeck.",
+    "zh-Hans": "请输入有效的牌组名称（最多 200 个字符），子牌组可用“父牌组::子牌组”。",
+    "ja": "有効なデッキ名を200文字以内で入力してください。サブデッキは「親::子」と指定できます。"
+  },
+  "Anki 未返回有效牌组，请刷新牌组列表后重试。": {
+    "en": "Anki did not return a valid deck. Refresh the deck list and try again.",
+    "zh-Hans": "Anki 未返回有效牌组，请刷新牌组列表后重试。",
+    "ja": "Anki から有効なデッキが返されませんでした。一覧を更新して再試行してください。"
+  },
+  "无法连接 AnkiConnect。请打开 Anki 并检查插件，再重试创建牌组。": {
+    "en": "Cannot connect to AnkiConnect. Open Anki, check the add-on, and try creating the deck again.",
+    "zh-Hans": "无法连接 AnkiConnect。请打开 Anki 并检查插件，再重试创建牌组。",
+    "ja": "AnkiConnect に接続できません。Anki を開き、アドオンを確認してから作成を再試行してください。"
+  },
+  "正在创建牌组，请稍候。": {
+    "en": "A deck is being created. Please wait.",
+    "zh-Hans": "正在创建牌组，请稍候。",
+    "ja": "デッキを作成中です。しばらくお待ちください。"
+  },
+  "牌组已在原连接中创建。Anki 连接已改变，请刷新后重新选择。": {
+    "en": "The deck was created on the previous connection. Your Anki connection changed; refresh and select the deck again.",
+    "zh-Hans": "牌组已在原连接中创建。Anki 连接已改变，请刷新后重新选择。",
+    "ja": "変更前の接続先にデッキを作成しました。Anki の接続先が変わったため、一覧を更新して選び直してください。"
+  },
+  "已创建并选用牌组：%@": {
+    "en": "Deck ready and selected: %@",
+    "zh-Hans": "已创建并选用牌组：%@",
+    "ja": "デッキを作成・選択しました：%@"
+  },
+  "新牌组名称": {
+    "en": "New deck name",
+    "zh-Hans": "新牌组名称",
+    "ja": "新しいデッキ名"
+  },
+  "支持“父牌组::子牌组”。创建并选用后立即保存目标牌组。": {
+    "en": "Use “Parent::Child” for subdecks. Creating and selecting saves your destination immediately.",
+    "zh-Hans": "支持“父牌组::子牌组”。创建并选用后立即保存目标牌组。",
+    "ja": "サブデッキは「親::子」と指定できます。作成して使用すると、追加先がすぐに保存されます。"
+  },
+  "请先保存 Anki 连接设置，再创建牌组。": {
+    "en": "Save your Anki connection settings before creating a deck.",
+    "zh-Hans": "请先保存 Anki 连接设置，再创建牌组。",
+    "ja": "デッキを作成する前に、Anki の接続設定を保存してください。"
+  },
+  "正在创建…": {
+    "en": "Creating…",
+    "zh-Hans": "正在创建…",
+    "ja": "作成中…"
+  },
+  "创建并选用": {
+    "en": "Create & use",
+    "zh-Hans": "创建并选用",
+    "ja": "作成して使用"
+  },
+  "新建牌组…": {
+    "en": "Create deck…",
+    "zh-Hans": "新建牌组…",
+    "ja": "デッキを作成…"
   }
 }

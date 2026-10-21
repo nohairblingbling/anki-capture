@@ -23,6 +23,7 @@ Select a word or phrase while reading a paper, web page, or document, then press
 
 - **Capture without leaving your reading flow.** A configurable global shortcut, menu bar access, and an optional Dock icon.
 - **Create useful cards with AI.** Generate meanings, definitions, pronunciation, and examples for words, phrases, and short concepts.
+- **Choose or create your deck.** Create a deck or a nested subdeck directly in Preferences and use it as the capture destination.
 - **Use your own AI account.** Connect Codex, Claude Code, or Gemini independently and choose a model through the official CLI installed on your Mac.
 - **Learn across languages.** Automatically detect the term’s language. Choose English, Chinese, or Japanese explanations independently of the interface language, with optional study-language and learning-level preferences.
 - **Review uncertain results.** Ambiguous languages or meanings wait for your confirmation. Preview and edit cards before adding them, or enable automatic adding for clear results.

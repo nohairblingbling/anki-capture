@@ -22,6 +22,7 @@
 "Anki → 工具 → 插件 → 获取插件，输入 2055492159，安装后重启 Anki。" = "Anki → Tools → Add-ons → Get Add-ons. Enter 2055492159, install, then restart Anki.";
 "Anki 尚未连接" = "Anki not connected";
 "Anki 已连接" = "Anki connected";
+"Anki 未返回有效牌组，请刷新牌组列表后重试。" = "Anki did not return a valid deck. Refresh the deck list and try again.";
 "Anki 连接与安装帮助" = "Anki connection & setup";
 "AnkiConnect API Key（如有）" = "AnkiConnect API key (optional)";
 "AnkiConnect HTTP 响应异常。" = "Unexpected AnkiConnect HTTP response.";
@@ -56,6 +57,7 @@
 "入门" = "Beginner";
 "关闭" = "Close";
 "关闭后，生成的字卡需要先预览确认。" = "When disabled, generated cards need your review before adding.";
+"创建并选用" = "Create & use";
 "删除“%@”及其新建卡片" = "Delete “%@” and its new cards";
 "制卡偏好" = "Card preferences";
 "制卡服务" = "Card generation";
@@ -99,6 +101,7 @@
 "尚未选择牌组" = "No deck selected";
 "工作区" = "Workspace";
 "已保存" = "Saved";
+"已创建并选用牌组：%@" = "Deck ready and selected: %@";
 "已加入 Anki" = "Added to Anki";
 "已存在" = "Already exists";
 "已展开" = "Expanded";
@@ -129,8 +132,11 @@
 "撤销添加" = "Undo addition";
 "撤销这次添加？" = "Undo this addition?";
 "操作未完成" = "Could not complete the action";
+"支持“父牌组::子牌组”。创建并选用后立即保存目标牌组。" = "Use “Parent::Child” for subdecks. Creating and selecting saves your destination immediately.";
 "收录到 Anki" = "Add to Anki";
 "收词" = "Capture";
+"新建牌组…" = "Create deck…";
+"新牌组名称" = "New deck name";
 "无法发送复制快捷键。" = "Could not send the copy shortcut.";
 "无法启动" = "Unable to start";
 "无法打开本地任务数据库。" = "Could not open the local capture database.";
@@ -138,6 +144,7 @@
 "无法注册快捷键监听（%d）。" = "Could not register the shortcut handler (%d).";
 "无法确认这条笔记属于本任务，请在 Anki 中查看。" = "Could not confirm that this note belongs to the capture. Check it in Anki.";
 "无法获取选中的文本。" = "Could not read the selected text.";
+"无法连接 AnkiConnect。请打开 Anki 并检查插件，再重试创建牌组。" = "Cannot connect to AnkiConnect. Open Anki, check the add-on, and try creating the deck again.";
 "无法连接 AnkiConnect。请打开 Anki，安装插件 2055492159 并重启。任务已保留。" = "Could not connect to AnkiConnect. Open Anki, install add-on 2055492159, and restart Anki. Your capture has been kept.";
 "日语" = "Japanese";
 "更多学习偏好（可选）" = "More learning preferences (optional)";
@@ -157,6 +164,8 @@
 "模型与连接设置" = "Model & connection";
 "正在保存…" = "Saving…";
 "正在写入" = "Saving";
+"正在创建…" = "Creating…";
+"正在创建牌组，请稍候。" = "A deck is being created. Please wait.";
 "正在录制" = "Recording shortcut";
 "正在收录" = "Adding…";
 "正在检查…" = "Checking…";
@@ -166,6 +175,7 @@
 "沿用 CLI 的 API Key，按其配置计费。" = "Using the CLI's API key and billing configuration.";
 "沿用 CLI 默认模型" = "Use CLI default";
 "熟悉程度" = "Learning level";
+"牌组已在原连接中创建。Anki 连接已改变，请刷新后重新选择。" = "The deck was created on the previous connection. Your Anki connection changed; refresh and select the deck again.";
 "生成后可先预览、编辑，再确认加入。" = "Preview and edit generated cards before adding them.";
 "生成后直接加入牌组" = "Add generated cards automatically";
 "生成后自动加入所选牌组。" = "Cards are added to the selected deck automatically.";
@@ -213,6 +223,7 @@
 "词条语言" = "Term language";
 "词条语言自动识别；语言或词义有歧义时，先预览确认再加入 Anki。" = "The term’s language is detected automatically. Uncertain languages or meanings require a preview before adding to Anki.";
 "语言" = "Language";
+"请先保存 Anki 连接设置，再创建牌组。" = "Save your Anki connection settings before creating a deck.";
 "请先回到阅读器选中单词，再按全局快捷键。也可以在这里手动输入。" = "Select text in your reader first, then press the global shortcut. You can also type it here.";
 "请先在学习偏好中确认释义语言。CLI 用户请运行 configure --explanation-language en、zh-Hans 或 ja。" = "Confirm your explanation language in Learning preferences first. CLI: configure --explanation-language en, zh-Hans, or ja.";
 "请先在系统设置 → 隐私与安全性 → 辅助功能中允许 Anki Capture。" = "Allow Anki Capture in System Settings → Privacy & Security → Accessibility.";
@@ -226,6 +237,7 @@
 "请检查超时、牌组、模板或模型设置。" = "Check the timeout, deck, note type, and model settings.";
 "请求超时。" = "The request timed out.";
 "请至少包含 Command、Option 或 Control。" = "Include Command, Option, or Control.";
+"请输入有效的牌组名称（最多 200 个字符），子牌组可用“父牌组::子牌组”。" = "Enter a valid deck name (up to 200 characters). Use “Parent::Child” for a subdeck.";
 "请运行 doctor 检查登录、CLI 版本和网络。" = "Run doctor to check sign-in, CLI version, and network access.";
 "请选择" = "Choose…";
 "请选择一个单词或短语（最多 200 个字符、25 个单词）。" = "Select a word, phrase, or short concept (up to 200 characters and 25 words).";
