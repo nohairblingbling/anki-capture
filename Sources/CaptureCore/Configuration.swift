@@ -23,9 +23,17 @@ public struct AppConfiguration: Codable, Equatable, Sendable {
     public var geminiModel: String = ""
     public var showInDock: Bool = true
     public var interfaceLanguage: AppLanguage = .system
-    public var explanationLanguage: AppLanguage = .system
+    /// A first-run suggestion, never an inferred native language. Confirmation freezes an explicit choice.
+    public var explanationLanguage: AppLanguage = AppLanguage.system.resolved()
+    public var explanationLanguageConfirmed: Bool = false
+    public var learningPreferences = LearningPreferences()
     public var resolvedExplanationLanguage: AppLanguage {
-        (explanationLanguage == .system ? interfaceLanguage : explanationLanguage).resolved()
+        explanationLanguage.resolved()
+    }
+    public func requireLearningPreferences() throws {
+        guard explanationLanguageConfirmed, explanationLanguage != .system else {
+            throw CaptureError.invalid("请先在学习偏好中确认释义语言。CLI 用户请运行 configure --explanation-language en、zh-Hans 或 ja。")
+        }
     }
     public var deck: String = ""
     public var noteType: String = "Anki Capture"
@@ -53,13 +61,19 @@ public struct AppConfiguration: Codable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case provider, codexPath, claudePath, geminiPath, codexModel, claudeModel, geminiModel, showInDock
         case deck, noteType, ankiURL, ankiAPIKey, timeoutSeconds, autoSave, customInstructions
-        case interfaceLanguage, explanationLanguage
+        case interfaceLanguage, explanationLanguage, explanationLanguageConfirmed, learningPreferences
     }
     public init(from decoder: Decoder) throws {
         self.init()
         let values = try decoder.container(keyedBy: CodingKeys.self)
         interfaceLanguage = try values.decodeIfPresent(AppLanguage.self, forKey: .interfaceLanguage) ?? .system
-        explanationLanguage = try values.decodeIfPresent(AppLanguage.self, forKey: .explanationLanguage) ?? .system
+        let previousLanguage = try values.decodeIfPresent(AppLanguage.self, forKey: .explanationLanguage)
+        // Before 0.3 explanations were Chinese. A former "same as interface" choice needs one confirmation.
+        explanationLanguage = previousLanguage == .system ? interfaceLanguage.resolved() : (previousLanguage ?? .chinese)
+        explanationLanguageConfirmed = try values.decodeIfPresent(Bool.self, forKey: .explanationLanguageConfirmed)
+            ?? (previousLanguage != nil && previousLanguage != .system)
+        if explanationLanguage == .system { explanationLanguageConfirmed = false }
+        learningPreferences = try values.decodeIfPresent(LearningPreferences.self, forKey: .learningPreferences) ?? LearningPreferences()
         provider = try values.decodeIfPresent(AIProvider.self, forKey: .provider) ?? provider
         codexPath = try values.decodeIfPresent(String.self, forKey: .codexPath) ?? codexPath
         claudePath = try values.decodeIfPresent(String.self, forKey: .claudePath) ?? claudePath
@@ -77,6 +91,9 @@ public struct AppConfiguration: Codable, Equatable, Sendable {
         customInstructions = try values.decodeIfPresent(String.self, forKey: .customInstructions) ?? customInstructions
     }
     public func validated() throws -> Self {
+        guard !explanationLanguageConfirmed || explanationLanguage != .system else {
+            throw CaptureError.invalid("请先在学习偏好中确认释义语言。CLI 用户请运行 configure --explanation-language en、zh-Hans 或 ja。")
+        }
         guard let url = URL(string: ankiURL), url.scheme == "http",
               let host = url.host, ["127.0.0.1", "localhost", "::1", "[::1]"].contains(host),
               url.user == nil, url.password == nil, url.query == nil, url.fragment == nil else {

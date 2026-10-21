@@ -18,16 +18,16 @@ A native Mac app and CLI that use your own **Codex · Claude Code · Gemini CLI*
 
 ![The capture window with sample vocabulary](docs/images/capture-en.png)
 
-Select a word while reading a paper, browsing the web, or using a PDF reader. Press **⌃⌥⌘A**. Anki Capture generates a card in the background and adds it to your chosen deck. You can also type a word or phrase manually and review cards before adding them.
+Select a word while reading a paper, browsing the web, or using a PDF reader. Press **⌃⌥⌘A**. Anki Capture generates a card in the background and adds clear results to your chosen deck. Uncertain languages or meanings wait for your review. You can also type a word or phrase manually.
 
 ## Why use it?
 
 - **Stay in your reading flow.** A configurable global shortcut, menu bar access, and an optional Dock icon.
 - **Use the CLI accounts you already have.** Connect Codex, Claude Code, or Gemini separately and choose a model. No shared account or separate backend.
 - **Learn across languages.** English, Simplified Chinese, and Japanese UI, with system detection and immediate manual switching. Source vocabulary can be in other languages too.
-- **Choose your explanation language.** Follow the interface or choose English, Chinese, or Japanese independently. Japanese readings can use kana.
+- **Make it fit your learning.** Confirm English, Chinese, or Japanese explanations once. This choice stays independent of the interface. Optional study languages and a learning level help tailor explanations. Japanese readings can use kana.
 - **Keep your captures.** A persistent local queue retains generated cards when Anki is offline. Retries reuse completed generation; duplicate checks reduce accidental repeats.
-- **Review when you want.** Preview and edit generated cards, open them in Anki, or undo newly added cards that have no review history.
+- **Keep uncertainty visible.** Ambiguous cards require review even with automatic adding enabled. Preview and edit cards, open them in Anki, or undo newly added cards that have no review history.
 
 Words and phrases are the main focus. Short concepts such as **opportunity cost / 机会成本** also work: the prompt adapts the meaning and explanation, while the same Anki note template is retained.
 
@@ -63,7 +63,13 @@ In Anki Capture: **Preferences → Add to Anki → Anki connection & setup**, re
 
 ### 4. Choose languages and capture
 
-**Preferences → Language** selects the interface language; changes apply immediately. **Card preferences → Explanation language** controls card meanings and translations independently. **Same as interface** is the default. Save changes to card preferences.
+On first use, **Preferences → Learning preferences** asks which language explanations should use. Confirm once before capturing. The initial selection is a suggestion; the app does not infer your native language. Your choice is saved independently: a Japanese interface can keep Chinese explanations. **Preferences → Language** changes the interface immediately, with an optional system default.
+
+Expand **More learning preferences (optional)** to choose common study languages or a learning level. Leave them empty/Automatic if you prefer. These are hints, not restrictions; vocabulary in other languages still works. Save later changes with **⌘S**.
+
+Each capture detects its source language using the term and supplied context. An uncertain AI result, an unknown language, or a short Han-only term without context waits at **Review & confirm**, even with automatic adding enabled. The preview shows the reason and detected language; check and edit the meaning and examples, then explicitly add it. Providing the original sentence reduces ambiguity. Detection can still make mistakes, so you can require preview for every card by turning automatic adding off.
+
+![First-use language confirmation with demo settings](docs/images/learning-en.png)
 
 Allow **Accessibility** for Anki Capture when prompted. Select a word or phrase in a reader, then press **Control + Option + Command + A**. Change the shortcut in Preferences if needed.
 
@@ -90,6 +96,7 @@ anki-capture doctor
 anki-capture connections
 anki-capture configure --deck 'Reading' --provider codex
 anki-capture configure --language system --explanation-language zh-Hans
+anki-capture configure --study-languages en,ja --learning-level intermediate
 anki-capture configure --provider gemini --model flash
 anki-capture generate '折り合い' --context '互いに歩み寄って、折り合いをつけた。'
 anki-capture add 'in light of' --preview
@@ -98,7 +105,7 @@ anki-capture retry JOB_ID
 anki-capture run --watch
 ```
 
-`generate` only returns JSON. `add --preview` waits for confirmation; `add --queue-only` only persists a capture. Data commands accept `--data-dir PATH` for an isolated workspace. Use `--help` for all commands.
+Set `--explanation-language en`, `zh-Hans`, or `ja` before the first `generate` or `add`; `system` is only an interface setting. `generate` only returns JSON, including `source_language`, `needs_review`, and `review_reason`. `add --preview` always waits for confirmation, while uncertain cards also wait in normal automatic mode. Inspect `jobs`, then `retry JOB_ID` explicitly confirms a reviewed card. `add --queue-only` only persists a capture. Data commands accept `--data-dir PATH` for an isolated workspace. Use `--help` for all commands.
 
 ## Data and privacy
 
@@ -108,7 +115,7 @@ anki-capture run --watch
 - The app reads selections only when invoked. It may use a copy-shortcut fallback and restores the clipboard when safe; it does not continuously monitor the clipboard.
 - Generated fields are plain text and escaped before writing to Anki. AnkiConnect is restricted to local HTTP addresses. AI subprocesses are configured without tool access.
 
-Changing languages does not translate existing cards. New captures remember their explanation language; legacy queued captures retain their original Chinese explanation behavior. Historical JSON names such as `meaning_zh` and `example_en` remain for compatibility and do **not** restrict card languages.
+Changing languages does not translate existing cards. New captures remember their explanation language and learning hints. Upgrading keeps existing explicit explanation choices; the former “Same as interface” setting asks for one independent confirmation. Pre-0.3 queued captures retain their original Chinese explanation behavior. Historical JSON names such as `meaning_zh` and `example_en` remain for compatibility and do **not** restrict card languages. Confirmed reviews and edited content survive Anki outages and restarts without regenerating.
 
 ## Build and contribute
 

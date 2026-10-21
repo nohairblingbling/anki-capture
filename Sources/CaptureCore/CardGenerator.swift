@@ -25,6 +25,13 @@ public struct LocalCLIGenerator: CardGenerating {
         using the supplied context when present. Without context choose a common meaning and
         set needs_review=true for significant ambiguity. sense_key is a short stable English
         kebab-case label for that meaning. Use \(config.resolvedExplanationLanguage.promptName) as the explanation language.
+        source_language is the detected BCP-47 language code (such as en, ja, zh, fr), or und
+        when it cannot be determined. Do not infer source language from interface or explanation
+        language. If language OR meaning is uncertain, set needs_review=true and explain the
+        uncertainty briefly in review_reason using the explanation language; otherwise return
+        review_reason as an empty string. Short Han-only words without context can be Chinese
+        or Japanese: do not assume one from the user's preferences. Mark them for review.
+        Learner preferences: \(config.learningPreferences.promptDescription)
         The JSON field names are historical compatibility keys, NOT language requirements:
         meaning_zh is a concise meaning/answer in the explanation language; definition_en is a
         short definition in the detected source language. pronunciation may be empty if uncertain;

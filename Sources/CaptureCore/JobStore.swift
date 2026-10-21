@@ -73,6 +73,7 @@ public actor JobStore {
         }
     }
     public func enqueue(_ input: CaptureInput, config: AppConfiguration) throws -> CaptureJob {
+        try config.requireLearningPreferences()
         guard !config.deck.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw CaptureError.invalid("请先选择目标 Anki 牌组。")
         }
@@ -86,7 +87,8 @@ public actor JobStore {
         let job = CaptureJob(id: UUID().uuidString, input: input, deck: config.deck, noteType: config.noteType,
                              provider: config.provider, model: config.model, autoSave: config.autoSave, status: .queued,
                              createdAt: now, updatedAt: now, attempts: 0,
-                             explanationLanguage: config.resolvedExplanationLanguage)
+                             explanationLanguage: config.resolvedExplanationLanguage,
+                             learningPreferences: config.learningPreferences)
         let payload = String(decoding: try JSONEncoder().encode(job), as: UTF8.self)
         try execute("INSERT INTO jobs(id,fingerprint,payload,status,created_at) VALUES(?,?,?,?,?)",
                     [job.id, fingerprint, payload, job.status.rawValue, String(now.timeIntervalSince1970)])
@@ -134,6 +136,7 @@ public actor JobStore {
         guard [.failed, .waitingForAnki, .review].contains(job.status) else {
             throw CaptureError.invalid("这个任务当前不需要重试。")
         }
+        if job.status == .review { job.reviewConfirmed = true }
         job.status = job.card == nil ? .queued : .ready; job.error = nil; job.updatedAt = Date()
         try persist(job, release: true)
     }

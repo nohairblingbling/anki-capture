@@ -1183,5 +1183,155 @@
     "en": " sign-in",
     "zh-Hans": " 登录",
     "ja": " ログイン"
+  },
+  "学习偏好": {
+    "en": "Learning preferences",
+    "zh-Hans": "学习偏好",
+    "ja": "学習設定"
+  },
+  "让释义和例句适合你，界面语言独立设置。": {
+    "en": "Tailor meanings and examples to you. Set the interface language separately.",
+    "zh-Hans": "让释义和例句适合你，界面语言独立设置。",
+    "ja": "意味と例文を自分に合わせて調整。表示言語は別に設定できます。"
+  },
+  "你希望用哪种语言理解释义？": {
+    "en": "Which language should explanations use?",
+    "zh-Hans": "你希望用哪种语言理解释义？",
+    "ja": "意味の説明に使う言語を選んでください"
+  },
+  "确认一次，之后每次收录都会沿用。你可以随时在这里修改。": {
+    "en": "Confirm once for future captures. You can change it here anytime.",
+    "zh-Hans": "确认一次，之后每次收录都会沿用。你可以随时在这里修改。",
+    "ja": "一度確認すると、今後の取り込みに適用されます。いつでもここで変更できます。"
+  },
+  "单独记住你的选择，切换界面语言不会改变释义语言。": {
+    "en": "Your choice is saved separately. Changing the interface will keep this language.",
+    "zh-Hans": "单独记住你的选择，切换界面语言不会改变释义语言。",
+    "ja": "表示言語とは別に保存されます。表示言語を変えても説明の言語は変わりません。"
+  },
+  "确认释义语言": {
+    "en": "Confirm explanation language",
+    "zh-Hans": "确认释义语言",
+    "ja": "説明の言語を確定"
+  },
+  "更多学习偏好（可选）": {
+    "en": "More learning preferences (optional)",
+    "zh-Hans": "更多学习偏好（可选）",
+    "ja": "その他の学習設定（任意）"
+  },
+  "常学语言": {
+    "en": "Languages you study",
+    "zh-Hans": "常学语言",
+    "ja": "学習する言語"
+  },
+  "英语": {
+    "en": "English",
+    "zh-Hans": "英语",
+    "ja": "英語"
+  },
+  "中文": {
+    "en": "Chinese",
+    "zh-Hans": "中文",
+    "ja": "中国語"
+  },
+  "日语": {
+    "en": "Japanese",
+    "zh-Hans": "日语",
+    "ja": "日本語"
+  },
+  "用于辅助判断，可全部留空。其他语言的词条也能收录。": {
+    "en": "Optional hints for detection. You can capture other languages too.",
+    "zh-Hans": "用于辅助判断，可全部留空。其他语言的词条也能收录。",
+    "ja": "言語判定の参考に使います。未選択でも、他の言語でも取り込めます。"
+  },
+  "熟悉程度": {
+    "en": "Learning level",
+    "zh-Hans": "熟悉程度",
+    "ja": "習熟度"
+  },
+  "自动适配": {
+    "en": "Automatic",
+    "zh-Hans": "自动适配",
+    "ja": "自動調整"
+  },
+  "入门": {
+    "en": "Beginner",
+    "zh-Hans": "入门",
+    "ja": "初級"
+  },
+  "中级": {
+    "en": "Intermediate",
+    "zh-Hans": "中级",
+    "ja": "中級"
+  },
+  "进阶": {
+    "en": "Advanced",
+    "zh-Hans": "进阶",
+    "ja": "上級"
+  },
+  "词条语言自动识别；语言或词义有歧义时，先预览确认再加入 Anki。": {
+    "en": "The term’s language is detected automatically. Uncertain languages or meanings require a preview before adding to Anki.",
+    "zh-Hans": "词条语言自动识别；语言或词义有歧义时，先预览确认再加入 Anki。",
+    "ja": "単語の言語は自動判定します。言語や意味が曖昧な場合は、プレビューで確認してから Anki に追加します。"
+  },
+  "识别明确时自动加入；有歧义时仍需预览确认。": {
+    "en": "Clear results are added automatically. Uncertain results still need your review.",
+    "zh-Hans": "识别明确时自动加入；有歧义时仍需预览确认。",
+    "ja": "明確な結果は自動で追加します。曖昧な場合はプレビューでの確認が必要です。"
+  },
+  "制卡服务": {
+    "en": "Card generation",
+    "zh-Hans": "制卡服务",
+    "ja": "カード生成"
+  },
+  "请先确认释义语言，再开始收录。": {
+    "en": "Confirm your explanation language before capturing.",
+    "zh-Hans": "请先确认释义语言，再开始收录。",
+    "ja": "取り込む前に、説明の言語を確定してください。"
+  },
+  "打开学习偏好": {
+    "en": "Open learning preferences",
+    "zh-Hans": "打开学习偏好",
+    "ja": "学習設定を開く"
+  },
+  "需要确认": {
+    "en": "Review needed",
+    "zh-Hans": "需要确认",
+    "ja": "確認が必要です"
+  },
+  "检查语言、释义和例句；可直接修改后确认。": {
+    "en": "Check the language, meaning, and examples. Edit them here before confirming.",
+    "zh-Hans": "检查语言、释义和例句；可直接修改后确认。",
+    "ja": "言語、意味、例文を確認してください。ここで編集してから確定できます。"
+  },
+  "词条语言": {
+    "en": "Term language",
+    "zh-Hans": "词条语言",
+    "ja": "単語の言語"
+  },
+  "自动识别": {
+    "en": "Detected automatically",
+    "zh-Hans": "自动识别",
+    "ja": "自動判定"
+  },
+  "正在保存…": {
+    "en": "Saving…",
+    "zh-Hans": "正在保存…",
+    "ja": "保存中…"
+  },
+  "未能确定词条语言，请检查释义和例句。": {
+    "en": "The term’s language could not be determined. Check the meaning and examples.",
+    "zh-Hans": "未能确定词条语言，请检查释义和例句。",
+    "ja": "単語の言語を特定できませんでした。意味と例文を確認してください。"
+  },
+  "这个汉字词可能属于中文或日文。缺少原句，请检查语言和词义。": {
+    "en": "This term could be Chinese or Japanese. Without a source sentence, check its language and meaning.",
+    "zh-Hans": "这个汉字词可能属于中文或日文。缺少原句，请检查语言和词义。",
+    "ja": "この漢字の語は中国語・日本語のどちらの可能性もあります。原文がないため、言語と意味を確認してください。"
+  },
+  "请先在学习偏好中确认释义语言。CLI 用户请运行 configure --explanation-language en、zh-Hans 或 ja。": {
+    "en": "Confirm your explanation language in Learning preferences first. CLI: configure --explanation-language en, zh-Hans, or ja.",
+    "zh-Hans": "请先在学习偏好中确认释义语言。CLI 用户请运行 configure --explanation-language en、zh-Hans 或 ja。",
+    "ja": "まず学習設定で説明の言語を確定してください。CLI: configure --explanation-language en、zh-Hans、または ja。"
   }
 }

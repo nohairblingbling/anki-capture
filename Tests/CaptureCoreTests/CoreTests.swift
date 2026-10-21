@@ -6,11 +6,12 @@ private func temporaryPaths() throws -> StoragePaths {
     try StoragePaths(root: FileManager.default.temporaryDirectory.appendingPathComponent("anki-capture-test-" + UUID().uuidString))
 }
 private func testConfiguration() -> AppConfiguration {
-    var config = AppConfiguration(); config.deck = "Vocabulary"; return config
+    var config = AppConfiguration(); config.deck = "Vocabulary"; config.explanationLanguage = .chinese
+    config.explanationLanguageConfirmed = true; return config
 }
 private let sample = VocabularyCard(term: "salient", lemma: "salient", senseKey: "most-noticeable",
     meaningZh: "显著的；突出的", definitionEn: "Most noticeable or important.", partOfSpeech: "adjective",
-    exampleEn: "The paper highlights three salient findings.", exampleZh: "论文强调了三个显著发现。")
+    exampleEn: "The paper highlights three salient findings.", exampleZh: "论文强调了三个显著发现。", sourceLanguage: "en")
 
 @Test func captureValidationAndNormalization() throws {
     #expect(throws: CaptureError.self) { try CaptureInput(text: " \n ") }

@@ -29,6 +29,12 @@ struct MainView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppStyle.sectionGap) {
                 PageHeading(title: "留下一个新词", subtitle: "阅读时选词，按快捷键收录。\n也可以在这里输入。")
+                if !model.configuration.explanationLanguageConfirmed {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("请先确认释义语言，再开始收录。").font(.callout)
+                        Button("打开学习偏好") { model.page = .settings }
+                    }
+                }
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Label("选词收录", systemImage: "keyboard").font(.callout).foregroundStyle(.secondary)
@@ -72,9 +78,9 @@ struct MainView: View {
                     }
                     .buttonStyle(.borderedProminent).controlSize(.large)
                     .keyboardShortcut(.return, modifiers: .command)
-                    .disabled(submitting || term.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.configuration.deck.isEmpty)
+                    .disabled(submitting || !model.configuration.explanationLanguageConfirmed || term.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.configuration.deck.isEmpty)
                     .help("生成字卡并按当前收录偏好处理，Command-Return")
-                    Text(LocalizedStringKey(model.configuration.autoSave ? "生成后自动加入所选牌组。" : "生成后可先预览、编辑，再确认加入。"))
+                    Text(LocalizedStringKey(model.configuration.autoSave ? "识别明确时自动加入；有歧义时仍需预览确认。" : "生成后可先预览、编辑，再确认加入。"))
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 captureStatus
@@ -207,11 +213,12 @@ private struct CaptureHistoryRow: View {
     }
 }
 
-private struct CardPreview: View {
+struct CardPreview: View {
     let job: CaptureJob
     let model: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var card: VocabularyCard
+    @State private var saving = false
     init(job: CaptureJob, model: AppModel) {
         self.job = job; self.model = model
         _card = State(initialValue: job.card ?? .init(term: job.input.text, lemma: "", senseKey: "", meaningZh: "", definitionEn: ""))
@@ -224,6 +231,21 @@ private struct CardPreview: View {
                 Label(job.deck, systemImage: "rectangle.stack").font(.callout).foregroundStyle(.secondary)
             }.padding(24)
             Form {
+                if card.needsReview {
+                    Section("需要确认") {
+                        Label { Text(verbatim: reviewReason).fixedSize(horizontal: false, vertical: true) }
+                            icon: { Image(systemName: "info.circle") }
+                        Text("检查语言、释义和例句；可直接修改后确认。")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                if let language = card.sourceLanguage, !language.isEmpty {
+                    Section("词条语言") {
+                        LabeledContent("自动识别") {
+                            Text(verbatim: model.configuration.interfaceLanguage.locale.localizedString(forIdentifier: language) ?? language)
+                        }
+                    }
+                }
                 Section("释义") {
                     cardField("释义", text: $card.meaningZh)
                     cardField("定义", text: $card.definitionEn)
@@ -240,20 +262,27 @@ private struct CardPreview: View {
                         if !job.input.source.isEmpty { LabeledContent("来源", value: job.input.source).textSelection(.enabled) }
                     }
                 }
-            }.formStyle(.grouped).scrollContentBackground(.hidden)
+            }.formStyle(.grouped).scrollContentBackground(.hidden).disabled(saving)
             Divider()
             HStack {
-                if card.needsReview {
-                    StatusLabel(title: "词义可能存在歧义，请检查。", symbol: "info.circle")
-                }
                 Spacer()
-                Button("关闭") { dismiss() }.keyboardShortcut(.cancelAction)
+                Button("关闭") { dismiss() }.keyboardShortcut(.cancelAction).disabled(saving)
                 if job.status == .review {
-                    Button("确认加入 Anki") { Task { await model.saveReview(job, card: card) }; dismiss() }
-                        .buttonStyle(.borderedProminent)
+                    Button(LocalizedStringKey(saving ? "正在保存…" : "确认加入 Anki")) {
+                        saving = true
+                        Task {
+                            if await model.saveReview(job, card: card) { dismiss() }
+                            saving = false
+                        }
+                    }.buttonStyle(.borderedProminent).disabled(saving)
                 }
             }.padding(20)
-        }.frame(width: 650, height: 640).background(AppStyle.canvas)
+        }.frame(width: 650, height: 680).background(AppStyle.canvas)
+            .interactiveDismissDisabled(saving)
+    }
+    private var reviewReason: String {
+        if let reason = card.reviewReason, !reason.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return reason }
+        return L10n.text("词义可能存在歧义，请检查。")
     }
     @ViewBuilder private func cardField(_ title: String, text: Binding<String>) -> some View {
         if job.status == .review {

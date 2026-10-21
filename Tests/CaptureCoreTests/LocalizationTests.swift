@@ -14,9 +14,10 @@ import Testing
     #expect(L10n.text("user-provided vocabulary", language: .japanese) == "user-provided vocabulary")
     var config = try JSONDecoder().decode(AppConfiguration.self, from: Data(#"{"deck":"Existing"}"#.utf8))
     #expect(config.interfaceLanguage == .system)
-    #expect(config.explanationLanguage == .system)
+    #expect(config.explanationLanguage == .chinese)
+    #expect(!config.explanationLanguageConfirmed)
     config.interfaceLanguage = .japanese
-    #expect(config.resolvedExplanationLanguage == .japanese)
+    #expect(config.resolvedExplanationLanguage == .chinese)
     config.explanationLanguage = .chinese
     #expect(config.resolvedExplanationLanguage == .chinese)
     #expect(try JSONDecoder().decode(AppConfiguration.self, from: JSONEncoder().encode(config)) == config)
@@ -45,7 +46,7 @@ private actor LanguageRecordingGenerator: CardGenerating {
     var received: [AppLanguage] = []
     func generate(input: CaptureInput, provider: AIProvider, model: String, config: AppConfiguration) async throws -> VocabularyCard {
         received.append(config.resolvedExplanationLanguage)
-        return .init(term: input.text, lemma: input.text, senseKey: "example", meaningZh: "a compromise", definitionEn: "互いに譲り合うこと。")
+        return .init(term: input.text, lemma: input.text, senseKey: "example", meaningZh: "a compromise", definitionEn: "互いに譲り合うこと。", sourceLanguage: "ja")
     }
 }
 private struct LanguageTestWriter: AnkiWriting {
@@ -56,6 +57,7 @@ private struct LanguageTestWriter: AnkiWriting {
     defer { try? FileManager.default.removeItem(at: paths.root) }
     let store = try JobStore(paths: paths)
     var config = AppConfiguration(); config.deck = "Test only"; config.interfaceLanguage = .japanese; config.explanationLanguage = .english
+    config.explanationLanguageConfirmed = true
     let job = try await store.enqueue(CaptureInput(text: "折り合い"), config: config)
     #expect(job.explanationLanguage == .english)
     var oldPayload = try JSONSerialization.jsonObject(with: JSONEncoder().encode(job)) as! [String: Any]

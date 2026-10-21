@@ -72,18 +72,23 @@ public struct VocabularyCard: Codable, Equatable, Sendable {
     public var exampleEn: String
     public var exampleZh: String
     public var needsReview: Bool
+    /// Optional for cards generated before language detection metadata was added.
+    public var sourceLanguage: String?
+    public var reviewReason: String?
     enum CodingKeys: String, CodingKey {
         case term, lemma, pronunciation
         case senseKey = "sense_key", meaningZh = "meaning_zh", definitionEn = "definition_en"
         case partOfSpeech = "part_of_speech", exampleEn = "example_en", exampleZh = "example_zh"
         case needsReview = "needs_review"
+        case sourceLanguage = "source_language", reviewReason = "review_reason"
     }
     public init(term: String, lemma: String, senseKey: String, meaningZh: String, definitionEn: String,
                 partOfSpeech: String = "", pronunciation: String = "", exampleEn: String = "",
-                exampleZh: String = "", needsReview: Bool = false) {
+                exampleZh: String = "", needsReview: Bool = false, sourceLanguage: String? = nil, reviewReason: String? = nil) {
         self.term = term; self.lemma = lemma; self.senseKey = senseKey; self.meaningZh = meaningZh
         self.definitionEn = definitionEn; self.partOfSpeech = partOfSpeech; self.pronunciation = pronunciation
         self.exampleEn = exampleEn; self.exampleZh = exampleZh; self.needsReview = needsReview
+        self.sourceLanguage = sourceLanguage; self.reviewReason = reviewReason
     }
     public func validated() throws -> Self {
         for value in [term, lemma, senseKey, meaningZh, definitionEn] {
@@ -92,7 +97,8 @@ public struct VocabularyCard: Codable, Equatable, Sendable {
             }
         }
         guard term.count <= 200, lemma.count <= 200, senseKey.count <= 150,
-              [meaningZh, definitionEn, partOfSpeech, pronunciation, exampleEn, exampleZh].allSatisfy({ $0.count <= 2000 }) else {
+              (sourceLanguage?.count ?? 0) <= 50,
+              [meaningZh, definitionEn, partOfSpeech, pronunciation, exampleEn, exampleZh, reviewReason ?? ""].allSatisfy({ $0.count <= 2000 }) else {
             throw CaptureError.invalid("AI 返回的字卡字段过长。")
         }
         return self
@@ -102,7 +108,7 @@ public struct VocabularyCard: Codable, Equatable, Sendable {
         "AC1-" + stableHash(["en", normalized(lemma), normalized(senseKey), deck, noteType].joined(separator: "\u{0}"))
     }
     public static let schema = #"""
-    {"type":"object","properties":{"term":{"type":"string"},"lemma":{"type":"string"},"sense_key":{"type":"string"},"meaning_zh":{"type":"string"},"definition_en":{"type":"string"},"part_of_speech":{"type":"string"},"pronunciation":{"type":"string"},"example_en":{"type":"string"},"example_zh":{"type":"string"},"needs_review":{"type":"boolean"}},"required":["term","lemma","sense_key","meaning_zh","definition_en","part_of_speech","pronunciation","example_en","example_zh","needs_review"],"additionalProperties":false}
+    {"type":"object","properties":{"term":{"type":"string"},"lemma":{"type":"string"},"sense_key":{"type":"string"},"meaning_zh":{"type":"string"},"definition_en":{"type":"string"},"part_of_speech":{"type":"string"},"pronunciation":{"type":"string"},"example_en":{"type":"string"},"example_zh":{"type":"string"},"needs_review":{"type":"boolean"},"source_language":{"type":"string"},"review_reason":{"type":"string"}},"required":["term","lemma","sense_key","meaning_zh","definition_en","part_of_speech","pronunciation","example_en","example_zh","needs_review","source_language","review_reason"],"additionalProperties":false}
     """#
 }
 
@@ -140,6 +146,9 @@ public struct CaptureJob: Identifiable, Codable, Sendable {
     public var attempts: Int
     /// Nil in pre-0.3 jobs: preserve their original Chinese explanation behavior.
     public var explanationLanguage: AppLanguage? = nil
+    public var learningPreferences: LearningPreferences? = nil
+    /// Explicit review confirmation survives offline retries and process restarts.
+    public var reviewConfirmed: Bool? = nil
 }
 
 public func stableHash(_ text: String) -> String {

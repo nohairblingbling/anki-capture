@@ -40,6 +40,7 @@ final class AppModel {
         store = try JobStore(paths: paths)
         worker = QueueWorker(store: store, generator: LocalCLIGenerator(paths: paths))
         L10n.language = configuration.interfaceLanguage
+        if !configuration.explanationLanguageConfirmed { page = .settings }
     }
     var pending: Int { jobs.filter { [.queued, .generating, .ready, .saving, .waitingForAnki].contains($0.status) }.count }
     var savedToday: Int { jobs.filter { $0.status == .saved && Calendar.current.isDateInToday($0.updatedAt) }.count }
@@ -79,10 +80,12 @@ final class AppModel {
         } catch { self.error = error.localizedDescription }
     }
     func captureSelected() async {
+        guard ensureLearningPreferences() else { return }
         do { await enqueue(try await SelectionCapture.capture()) }
         catch { report(error) }
     }
     @discardableResult func enqueue(_ input: CaptureInput) async -> Bool {
+        guard ensureLearningPreferences() else { return false }
         do {
             let job = try await store.enqueue(input, config: configuration.validated())
             message = "\(input.text) · \(L10n.text(job.status.title))"
@@ -103,9 +106,22 @@ final class AppModel {
         do { try await store.retry(job.id); await refresh(); processQueue() }
         catch { report(error) }
     }
-    func saveReview(_ job: CaptureJob, card: VocabularyCard) async {
-        do { try await store.replaceReviewCard(job.id, card: card); await retry(job) }
-        catch { report(error) }
+    @discardableResult func saveReview(_ job: CaptureJob, card: VocabularyCard) async -> Bool {
+        do {
+            try await store.replaceReviewCard(job.id, card: card)
+            try await store.retry(job.id)
+            await refresh(); processQueue()
+            return true
+        } catch { report(error); return false }
+    }
+    @discardableResult func ensureLearningPreferences() -> Bool {
+        guard configuration.explanationLanguageConfirmed else {
+            page = .settings; openMainWindow?()
+            message = L10n.text("请先确认释义语言，再开始收录。")
+            CaptureHUD.show(message)
+            return false
+        }
+        return true
     }
     @discardableResult func saveSettings(_ draft: AppConfiguration) -> Bool {
         do {

@@ -11,7 +11,7 @@ struct CommonOptions: ParsableArguments {
 struct AnkiCaptureCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "anki-capture", abstract: "Capture multilingual Anki cards using your local Codex, Claude Code, or Gemini CLI.",
-        version: "0.3.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
+        version: "0.4.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
                                       Generate.self, Add.self, Jobs.self, Retry.self, Undo.self, Run.self], defaultSubcommand: Doctor.self)
 }
 
@@ -63,7 +63,9 @@ struct Configure: ParsableCommand {
     @OptionGroup var common: CommonOptions
     @Option var deck: String?
     @Option(help: "Interface language: system / en / zh-Hans / ja") var language: String?
-    @Option(help: "Explanation language: system (same as interface) / en / zh-Hans / ja") var explanationLanguage: String?
+    @Option(help: "Confirm and remember an independent explanation language: en / zh-Hans / ja") var explanationLanguage: String?
+    @Option(help: "Optional study language hints, comma-separated: en,zh,ja. Use an empty string to clear.") var studyLanguages: String?
+    @Option(help: "Explanation level: automatic / beginner / intermediate / advanced") var learningLevel: String?
     @Option var provider: String?
     @Option var model: String?
     @Option var noteType: String?
@@ -86,8 +88,19 @@ struct Configure: ParsableCommand {
             config.interfaceLanguage = value
         }
         if let explanationLanguage {
-            guard let value = AppLanguage(rawValue: explanationLanguage) else { throw ValidationError("explanation-language must be system, en, zh-Hans, or ja.") }
+            guard let value = AppLanguage(rawValue: explanationLanguage), value != .system else { throw ValidationError("explanation-language must be en, zh-Hans, or ja; it is independent of the interface.") }
             config.explanationLanguage = value
+            config.explanationLanguageConfirmed = true
+        }
+        if let studyLanguages {
+            let codes = studyLanguages.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+            let values = codes.compactMap(StudyLanguage.init(rawValue:))
+            guard values.count == codes.count else { throw ValidationError("study-languages must be comma-separated en, zh, ja, or empty.") }
+            config.learningPreferences.languages = Set(values)
+        }
+        if let learningLevel {
+            guard let value = LearningLevel(rawValue: learningLevel) else { throw ValidationError("learning-level must be automatic, beginner, intermediate, or advanced.") }
+            config.learningPreferences.level = value
         }
         if let deck { config.deck = deck }
         if let model { config.setModel(model, for: config.provider) }
@@ -142,9 +155,11 @@ struct Generate: AsyncParsableCommand {
         let config = try AppConfiguration.load(from: paths)
         L10n.language = config.interfaceLanguage
         let selected = try selectedProvider(provider, fallback: config.provider)
+        try config.requireLearningPreferences()
         let input = try CaptureInput(text: text, context: context, source: source, sourceApp: "CLI")
-        let card = try await LocalCLIGenerator(paths: paths).generate(input: input, provider: selected,
+        let generated = try await LocalCLIGenerator(paths: paths).generate(input: input, provider: selected,
             model: model ?? config.model(for: selected), config: config)
+        let card = CardReviewPolicy.prepared(generated, input: input, explanationLanguage: config.resolvedExplanationLanguage)
         print(try jsonString(card))
     }
 }

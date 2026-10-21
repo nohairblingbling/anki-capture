@@ -12,14 +12,24 @@ public actor QueueWorker {
         defer { running = false }
         while let job = try await store.claimNext() {
             do {
-                let card: VocabularyCard
-                if let existing = job.card { card = existing }
+                var card: VocabularyCard
+                if let existing = job.card {
+                    card = existing
+                    // Old ambiguous offline cards also require confirmation, but never re-prompt after approval.
+                    if card.needsReview && job.reviewConfirmed != true {
+                        try await store.generated(job.id, card: card, review: true)
+                        continue
+                    }
+                }
                 else {
                     var generationConfig = config
                     generationConfig.explanationLanguage = job.explanationLanguage ?? .chinese
+                    generationConfig.learningPreferences = job.learningPreferences ?? LearningPreferences()
                     card = try await generator.generate(input: job.input, provider: job.provider, model: job.model, config: generationConfig)
-                    try await store.generated(job.id, card: card, review: !job.autoSave)
-                    if !job.autoSave { continue }
+                    card = CardReviewPolicy.prepared(card, input: job.input, explanationLanguage: generationConfig.resolvedExplanationLanguage)
+                    let review = !job.autoSave || card.needsReview
+                    try await store.generated(job.id, card: card, review: review)
+                    if review { continue }
                 }
                 let client: any AnkiWriting = try writer ?? AnkiClient(config: config)
                 let result = try await client.save(card: card, job: job)
