@@ -34,8 +34,8 @@ final class AppModel {
     private var started = false
     private var knownStatus: [String: JobStatus] = [:]
 
-    init() throws {
-        paths = try StoragePaths()
+    init(storagePaths: StoragePaths? = nil) throws {
+        paths = try storagePaths ?? StoragePaths()
         configuration = try AppConfiguration.load(from: paths)
         store = try JobStore(paths: paths)
         worker = QueueWorker(store: store, generator: LocalCLIGenerator(paths: paths))

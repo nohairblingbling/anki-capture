@@ -20,6 +20,8 @@
 
 **Dock 图标**默认显示。在「偏好设置 → 应用」或菜单栏中切换「在 Dock 中显示」，立即生效并记住选择；隐藏后仍可从菜单栏打开收词窗口和 AI 连接页面。关闭主窗口不会退出菜单栏后台。
 
+界面跟随系统浅色／深色，采用适中密度的原生 Mac 布局。按 `⌘1 / ⌘2 / ⌘3` 切换收词、AI 连接和偏好设置，`⌘↩` 提交手动收词，`⌘S` 保存设置，`Esc` 关闭字卡预览。模型与 CLI 路径在各服务的「模型与连接设置」中展开。界面保留原生焦点样式，并为开关、状态和字卡操作提供辅助功能语义；没有自定义装饰动画。
+
 三种服务可以分别登录，只有默认制卡服务会用于新捕获的任务。登录令牌由各家 CLI 保存，安装包不包含开发者账号或个人配置。见[账号连接说明](docs/connections.md)。
 
 ## 运行与构建
@@ -91,6 +93,8 @@ AI 只生成固定结构的数据，Anki 写入由程序执行。所有字段在
 ## 开发
 
 见 [调研与选型](docs/research.md)、[架构与验收](docs/architecture.md)、[验证记录](docs/validation.md)。项目内已安装 SwiftUI Expert 和 macOS Development 两个开发 Skill，供 Codex 和 Claude Code 使用。运行产品无需加载 Skill。
+
+设计约定见 [PRODUCT.md](PRODUCT.md) 与 [DESIGN.md](DESIGN.md)。运行 `scripts/render-ui.sh` 可在 `dist/ui-previews/` 生成三个页面的浅色、深色及窄窗口预览。渲染使用临时数据目录和示例词条，不启动队列处理、不连接模型或 Anki，也不载入个人配置。它用于视觉检查，不能替代真实键盘和 VoiceOver 验收。
 
 ## 准备 GitHub 分发
 

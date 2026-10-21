@@ -44,7 +44,19 @@ struct AnkiCaptureApp: App {
         .defaultSize(width: 1180, height: 760)
         .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unified)
-        .commands { CommandGroup(replacing: .newItem) {} }
+        .commands {
+            CommandGroup(replacing: .newItem) {}
+            CommandMenu("导航") {
+                if let model {
+                    Button("收词") { model.page = .capture; model.openMainWindow?() }
+                        .keyboardShortcut("1", modifiers: .command)
+                    Button("AI 连接") { model.page = .connections; model.openMainWindow?() }
+                        .keyboardShortcut("2", modifiers: .command)
+                    Button("偏好设置") { model.page = .settings; model.openMainWindow?() }
+                        .keyboardShortcut("3", modifiers: .command)
+                }
+            }
+        }
         MenuBarExtra {
             if let model { CaptureMenu(model: model) }
             else { Text(startupError ?? "启动失败"); Button("退出") { NSApp.terminate(nil) } }

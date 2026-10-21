@@ -7,13 +7,19 @@ struct AppRootView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: Binding<AppPage?>(get: { model.page }, set: { if let page = $0 { model.page = page } })) {
-                ForEach(AppPage.allCases) { page in Label(page.title, systemImage: page.symbol).tag(page) }
+                Section("工作区") {
+                    ForEach(AppPage.allCases) { page in
+                        Label(page.title, systemImage: page.symbol)
+                            .padding(.vertical, 4).tag(page)
+                    }
+                }
             }
             .listStyle(.sidebar)
             .navigationTitle("Anki Capture")
             .navigationSplitViewColumnWidth(min: 170, ideal: 190, max: 230)
             .safeAreaInset(edge: .bottom) {
-                VStack(alignment: .leading, spacing: 9) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("当前牌组").foregroundStyle(.secondary)
                     Label(model.configuration.deck.isEmpty ? "尚未选择牌组" : model.configuration.deck, systemImage: "rectangle.stack")
                         .lineLimit(2)
                     Text("\(model.configuration.provider.title) · \(model.configuration.model.isEmpty ? "默认模型" : model.configuration.model)")
@@ -33,6 +39,7 @@ struct AppRootView: View {
                 ToolbarItem {
                     Button { Task { await model.checkConnections() } } label: { Label("刷新连接", systemImage: "arrow.clockwise") }
                         .disabled(model.checking)
+                        .help("检查 AI 与 Anki 连接，不调用模型")
                 }
             }
         }

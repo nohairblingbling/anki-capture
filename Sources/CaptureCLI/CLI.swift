@@ -11,7 +11,7 @@ struct CommonOptions: ParsableArguments {
 struct AnkiCaptureCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "anki-capture", abstract: "通过本机 Codex / Claude Code / Gemini 生成英语字卡并加入 Anki。",
-        version: "0.2.0", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
+        version: "0.2.1", subcommands: [Doctor.self, Connections.self, Configure.self, Decks.self, Models.self, Setup.self,
                                       Generate.self, Add.self, Jobs.self, Retry.self, Undo.self, Run.self], defaultSubcommand: Doctor.self)
 }
 

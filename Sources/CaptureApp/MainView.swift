@@ -8,13 +8,15 @@ struct MainView: View {
     @State private var source = ""
     @State private var preview: CaptureJob?
     @State private var undoJob: CaptureJob?
+    @State private var submitting = false
+    @FocusState private var termFocused: Bool
 
     var body: some View {
         HSplitView {
-            capturePane.frame(minWidth: 300, idealWidth: 340, maxWidth: 380)
+            capturePane.frame(minWidth: 300, idealWidth: 340, maxWidth: 400)
             historyPane.frame(minWidth: 420)
         }
-        .frame(minWidth: 800, minHeight: 590)
+        .frame(minWidth: 760, minHeight: 590)
         .sheet(item: $preview) { job in CardPreview(job: job, model: model) }
         .confirmationDialog("撤销这次添加？", isPresented: Binding(get: { undoJob != nil }, set: { if !$0 { undoJob = nil } }), titleVisibility: .visible) {
             if let job = undoJob {
@@ -25,112 +27,183 @@ struct MainView: View {
     }
     private var capturePane: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Image(systemName: "character.book.closed.fill").font(.system(size: 30)).foregroundStyle(.tint)
-                    Text("把遇到的词留下来").font(.title2.bold())
-                    Text("在阅读器中选词，按快捷键。\n也可以在这里输入单词或短语。")
-                        .font(.callout).foregroundStyle(.secondary)
-                }
+            VStack(alignment: .leading, spacing: AppStyle.sectionGap) {
+                PageHeading(title: "留下一个新词", subtitle: "阅读时选词，按快捷键收录。\n也可以在这里输入。")
                 VStack(alignment: .leading, spacing: 10) {
-                    ShortcutRecorder()
+                    HStack {
+                        Label("选词收录", systemImage: "keyboard").font(.callout).foregroundStyle(.secondary)
+                        Spacer()
+                        ShortcutRecorder(showsLabel: false)
+                    }
                     if !model.permissionGranted {
                         Button("开启辅助功能权限") { SelectionCapture.requestPermission() }
-                            .buttonStyle(.bordered)
-                        Text("用于读取你主动选择的文本；不持续监视剪贴板。")
+                        Text("允许读取你主动选择的文本。")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
                 Divider()
-                VStack(alignment: .leading, spacing: 12) {
-                    TextField("单词或短语，如 salient / in light of", text: $term).textFieldStyle(.roundedBorder)
-                        .accessibilityLabel("单词或短语")
-                    Text("原句 / 上下文（可选）").font(.caption).foregroundStyle(.secondary)
-                    TextEditor(text: $context).font(.body).frame(height: 90)
-                        .scrollContentBackground(.hidden).padding(5).background(.background, in: RoundedRectangle(cornerRadius: 6))
-                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(.quaternary))
-                        .accessibilityLabel("上下文")
-                    TextField("来源标题或链接（可选）", text: $source).textFieldStyle(.roundedBorder)
-                    Button {
-                        do {
-                            let input = try CaptureInput(text: term, context: context, source: source, sourceApp: "Manual")
-                            Task {
-                                if await model.enqueue(input) { term = ""; context = ""; source = "" }
-                            }
-                        } catch { model.report(error) }
-                    } label: { Label(model.configuration.autoSave ? "生成并收录" : "生成预览", systemImage: "plus") .frame(maxWidth: .infinity) }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
-                    .disabled(term.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.configuration.deck.isEmpty)
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    Label(model.configuration.deck.isEmpty ? "请先选择目标牌组" : model.configuration.deck, systemImage: "rectangle.stack")
-                    Text("\(model.configuration.provider.title) · \(model.configuration.model.isEmpty ? "CLI 默认模型" : model.configuration.model)")
-                        .font(.caption).foregroundStyle(.secondary)
-                    if model.configuration.deck.isEmpty { Button("配置连接与牌组") { model.page = .settings } }
-                }
-                if !model.diagnostics.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ForEach(model.diagnostics.filter { $0.name == "AnkiConnect" || $0.name == model.configuration.provider.title + " 登录" }, id: \.name) { item in
-                            Label(item.name + "：" + item.detail, systemImage: item.ok ? "checkmark.circle.fill" : "circle")
-                                .font(.caption).foregroundStyle(item.ok ? Color.secondary : Color.orange)
-                                .lineLimit(2)
-                        }
-                        Button("管理 AI 连接") { model.page = .connections }.font(.caption)
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        FieldCaption(title: "单词或短语")
+                        TextField("salient / in light of", text: $term).textFieldStyle(.roundedBorder)
+                            .controlSize(.large).accessibilityLabel("单词或短语")
+                            .focused($termFocused)
                     }
+                    VStack(alignment: .leading, spacing: 8) {
+                        FieldCaption(title: "原句或上下文", optional: true)
+                        TextEditor(text: $context).font(.body).frame(height: 88)
+                            .scrollContentBackground(.hidden).padding(8)
+                            .background(AppStyle.surface, in: RoundedRectangle(cornerRadius: 6))
+                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(.quaternary))
+                            .accessibilityLabel("原句或上下文，可选")
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        FieldCaption(title: "来源", optional: true)
+                        TextField("标题或链接", text: $source).textFieldStyle(.roundedBorder)
+                            .accessibilityLabel("来源标题或链接，可选")
+                    }
+                    Button(action: submit) {
+                        HStack(spacing: 8) {
+                            if submitting { ProgressView().controlSize(.mini) }
+                            Text(submitting ? "正在收录" : model.configuration.autoSave ? "生成并收录" : "生成预览")
+                            Spacer()
+                            Text("⌘↩").font(.caption).accessibilityHidden(true)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .keyboardShortcut(.return, modifiers: .command)
+                    .disabled(submitting || term.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.configuration.deck.isEmpty)
+                    .help("生成字卡并按当前收录偏好处理，Command-Return")
+                    Text(model.configuration.autoSave ? "生成后自动加入所选牌组。" : "生成后可先预览、编辑，再确认加入。")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
-            }.padding(28)
-        }.background(Color(nsColor: .windowBackgroundColor))
+                captureStatus
+            }.padding(24)
+        }
+        .background(AppStyle.canvas)
+        .defaultFocus($termFocused, true)
+    }
+    private var captureStatus: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if model.configuration.deck.isEmpty {
+                Button("选择目标牌组") { model.page = .settings }
+            }
+            ForEach(model.diagnostics.filter { $0.name == "AnkiConnect" || $0.name == model.configuration.provider.title + " 登录" }, id: \.name) { item in
+                StatusLabel(title: item.name == "AnkiConnect" ? (item.ok ? "Anki 已连接" : "Anki 尚未连接") : (item.ok ? "\(model.configuration.provider.title) 已连接" : "\(model.configuration.provider.title) 需要连接"),
+                            symbol: item.ok ? "checkmark.circle" : "exclamationmark.circle", color: item.ok ? .secondary : .orange)
+                    .help(item.detail)
+            }
+            if model.diagnostics.contains(where: { !$0.ok && $0.name == model.configuration.provider.title + " 登录" }) {
+                Button("管理 AI 连接") { model.page = .connections }.font(.caption)
+            }
+        }
     }
     private var historyPane: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
-                Text("最近收录").font(.title2.bold())
+                Text("最近收录").font(.headline).accessibilityAddTraits(.isHeader)
                 Spacer()
-                Text("今天 \(model.savedToday) · 待处理 \(model.pending)").font(.callout).foregroundStyle(.secondary)
+                Text("今天 \(model.savedToday) · 待处理 \(model.pending)")
+                    .font(.caption).foregroundStyle(.secondary)
             }.padding(24)
+            Divider()
             if model.jobs.isEmpty {
                 ContentUnavailableView("从一个词开始", systemImage: "text.badge.plus",
-                    description: Text("生成结果和处理状态会出现在这里。\nAnki 暂时离线时，任务会留在本机。"))
+                    description: Text("输入单词，或在阅读器中选词并按快捷键。\n生成结果与收录状态会出现在这里。"))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List(model.jobs) { job in
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(job.input.text).font(.headline).textSelection(.enabled)
-                            Spacer()
-                            Text(job.status.title).font(.caption).foregroundStyle(statusColor(job.status))
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(model.jobs) { job in
+                            CaptureHistoryRow(job: job, preview: { preview = job },
+                                retry: { Task { await model.retry(job) } },
+                                openNote: { Task { await model.openNote(job) } }, undo: { undoJob = job })
+                            Divider().accessibilityHidden(true)
                         }
-                        if let card = job.card {
-                            Text(card.meaningZh).lineLimit(2)
-                            Text(card.definitionEn).font(.callout).foregroundStyle(.secondary).lineLimit(2)
-                        }
-                        if let error = job.error { Text(error).font(.caption).foregroundStyle(.orange).lineLimit(3) }
-                        HStack(spacing: 12) {
-                            Text(job.deck).lineLimit(1)
-                            Text(job.createdAt, style: .relative)
-                            Spacer()
-                            if job.card != nil { Button(job.status == .review ? "预览并确认" : "查看") { preview = job } }
-                            if [.failed, .waitingForAnki].contains(job.status) {
-                                Button("重试") { Task { await model.retry(job) } }
-                            }
-                            if job.noteID != nil { Button("在 Anki 中打开") { Task { await model.openNote(job) } } }
-                            if job.status == .saved { Button("撤销添加", role: .destructive) { undoJob = job } }
-                        }.font(.caption).foregroundStyle(.secondary).buttonStyle(.borderless)
-                    }.padding(.vertical, 10)
-                }.listStyle(.inset)
+                    }.padding(.horizontal, 24)
+                }
             }
             Divider()
-            Text(model.message).font(.caption).foregroundStyle(.secondary).lineLimit(2)
-                .padding(.horizontal, 24).padding(.vertical, 14)
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "tray").accessibilityHidden(true)
+                Text(model.message).lineLimit(2)
+            }.font(.caption).foregroundStyle(.secondary)
+                .padding(.horizontal, 24).padding(.vertical, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(AppStyle.surface)
+    }
+    private func submit() {
+        guard !submitting else { return }
+        do {
+            let input = try CaptureInput(text: term, context: context, source: source, sourceApp: "Manual")
+            submitting = true
+            Task {
+                if await model.enqueue(input) { term = ""; context = ""; source = ""; termFocused = true }
+                submitting = false
+            }
+        } catch { model.report(error) }
+    }
+}
+
+private struct CaptureHistoryRow: View {
+    let job: CaptureJob
+    let preview: () -> Void
+    let retry: () -> Void
+    let openNote: () -> Void
+    let undo: () -> Void
+    private var statusColor: Color {
+        switch job.status {
+        case .saved: .green
+        case .failed, .waitingForAnki: .orange
+        case .generating, .saving, .queued: .accentColor
+        default: .secondary
         }
     }
-    private func statusColor(_ status: JobStatus) -> Color {
-        switch status {
-        case .saved: return .green
-        case .failed, .waitingForAnki: return .orange
-        case .generating, .saving, .queued: return .accentColor
-        default: return .secondary
+    private var statusSymbol: String {
+        switch job.status {
+        case .saved: "checkmark.circle"
+        case .failed, .waitingForAnki: "exclamationmark.circle"
+        case .review: "eye"
+        case .generating, .saving, .queued, .ready: "clock"
+        default: "circle"
         }
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(job.input.text).font(.system(size: 17, weight: .semibold)).textSelection(.enabled)
+                    Spacer(minLength: 12)
+                    StatusLabel(title: job.status.title, symbol: statusSymbol, color: statusColor)
+                }
+                if let card = job.card {
+                    Text(card.meaningZh).font(.body).lineLimit(2)
+                    Text(card.definitionEn).font(.callout).foregroundStyle(.secondary).lineLimit(3)
+                }
+                if let error = job.error { Text(error).font(.caption).foregroundStyle(.orange).lineLimit(3) }
+            }.accessibilityElement(children: .combine)
+            HStack(spacing: 8) {
+                Text(job.deck).lineLimit(1)
+                Text("·").accessibilityHidden(true)
+                Text(job.createdAt, style: .relative)
+                Spacer()
+                if job.card != nil {
+                    Button(job.status == .review ? "预览并确认" : "查看字卡", action: preview)
+                        .accessibilityLabel("\(job.input.text)，\(job.status == .review ? "预览并确认" : "查看字卡")")
+                }
+            }.font(.caption).foregroundStyle(.secondary)
+            if [.failed, .waitingForAnki].contains(job.status) || job.noteID != nil || job.status == .saved {
+                HStack(spacing: 16) {
+                    if [.failed, .waitingForAnki].contains(job.status) { Button("重试", action: retry) }
+                    if job.noteID != nil { Button("在 Anki 中打开", action: openNote) }
+                    Spacer()
+                    if job.status == .saved { Button("撤销添加", role: .destructive, action: undo) }
+                }.font(.caption)
+            }
+        }
+        .buttonStyle(.borderless).padding(.vertical, 16)
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -144,27 +217,51 @@ private struct CardPreview: View {
         _card = State(initialValue: job.card ?? .init(term: job.input.text, lemma: "", senseKey: "", meaningZh: "", definitionEn: ""))
     }
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(card.term).font(.largeTitle.bold())
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(card.term).font(.system(size: 26, weight: .semibold)).textSelection(.enabled)
+                    .accessibilityAddTraits(.isHeader)
+                Label(job.deck, systemImage: "rectangle.stack").font(.callout).foregroundStyle(.secondary)
+            }.padding(24)
             Form {
-                TextField("中文释义", text: $card.meaningZh)
-                TextField("英文解释", text: $card.definitionEn)
-                TextField("词性", text: $card.partOfSpeech)
-                TextField("发音", text: $card.pronunciation)
-                TextField("例句", text: $card.exampleEn)
-                TextField("例句翻译", text: $card.exampleZh)
-                if !job.input.context.isEmpty { LabeledContent("原句", value: job.input.context) }
-                if !job.input.source.isEmpty { LabeledContent("来源", value: job.input.source) }
-            }.formStyle(.grouped).disabled(job.status != .review)
+                Section("释义") {
+                    cardField("中文释义", text: $card.meaningZh)
+                    cardField("英文解释", text: $card.definitionEn)
+                    cardField("词性", text: $card.partOfSpeech)
+                    cardField("发音", text: $card.pronunciation)
+                }
+                Section("例句") {
+                    cardField("英文例句", text: $card.exampleEn)
+                    cardField("中文翻译", text: $card.exampleZh)
+                }
+                if !job.input.context.isEmpty || !job.input.source.isEmpty {
+                    Section("阅读来源") {
+                        if !job.input.context.isEmpty { LabeledContent("原句", value: job.input.context).textSelection(.enabled) }
+                        if !job.input.source.isEmpty { LabeledContent("来源", value: job.input.source).textSelection(.enabled) }
+                    }
+                }
+            }.formStyle(.grouped).scrollContentBackground(.hidden)
+            Divider()
             HStack {
-                if card.needsReview { Label("词义存在歧义，建议检查。", systemImage: "info.circle").font(.caption).foregroundStyle(.secondary) }
+                if card.needsReview {
+                    StatusLabel(title: "词义可能存在歧义，请检查。", symbol: "info.circle")
+                }
                 Spacer()
                 Button("关闭") { dismiss() }.keyboardShortcut(.cancelAction)
                 if job.status == .review {
                     Button("确认加入 Anki") { Task { await model.saveReview(job, card: card) }; dismiss() }
                         .buttonStyle(.borderedProminent)
                 }
-            }
-        }.padding(24).frame(width: 640, height: 580)
+            }.padding(20)
+        }.frame(width: 650, height: 640).background(AppStyle.canvas)
+    }
+    @ViewBuilder private func cardField(_ title: String, text: Binding<String>) -> some View {
+        if job.status == .review {
+            TextField(title, text: text, axis: .vertical).lineLimit(1...4)
+        } else {
+            LabeledContent(title) { Text(text.wrappedValue).textSelection(.enabled).fixedSize(horizontal: false, vertical: true) }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(title).accessibilityValue(text.wrappedValue)
+        }
     }
 }

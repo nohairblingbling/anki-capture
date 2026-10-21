@@ -76,14 +76,15 @@ final class HotKeyManager {
 
 struct ShortcutRecorder: View {
     @State private var manager = HotKeyManager.shared
+    var showsLabel = true
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("选词快捷键")
-                Spacer()
+                if showsLabel { Text("选词快捷键"); Spacer() }
                 Button(manager.recording ? "按下快捷键 · Esc 取消" : manager.display) {
                     if manager.recording { manager.endRecording() } else { manager.beginRecording() }
                 }.font(.system(.body, design: .monospaced)).accessibilityLabel("设置全局快捷键")
+                    .accessibilityValue(manager.recording ? "正在录制" : manager.display)
             }
             if let failure = manager.failure { Text(failure).font(.caption).foregroundStyle(.orange) }
         }.onDisappear { if manager.recording { manager.endRecording() } }
