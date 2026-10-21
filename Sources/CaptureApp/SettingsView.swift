@@ -203,10 +203,13 @@ private struct AnkiConnectionStatus: View {
                         Text("正在检查 Anki…").font(.callout.weight(.medium))
                     }.accessibilityElement(children: .combine)
                 } else if let diagnostic {
-                    Label(LocalizedStringKey(diagnostic.ok ? "Anki 已连接" : "Anki 尚未连接"),
-                          systemImage: diagnostic.ok ? "checkmark.circle.fill" : "exclamationmark.circle")
-                        .font(.callout.weight(.medium))
-                        .foregroundStyle(diagnostic.ok ? Color.green : Color.orange)
+                    Label {
+                        Text(LocalizedStringKey(diagnostic.ok ? "Anki 已连接" : "Anki 尚未连接"))
+                            .foregroundStyle(.primary)
+                    } icon: {
+                        Image(systemName: diagnostic.ok ? "checkmark.circle.fill" : "exclamationmark.circle")
+                            .foregroundStyle(diagnostic.ok ? Color.green : Color.orange)
+                    }.font(.callout.weight(.medium))
                         .accessibilityIdentifier("anki.connection.status")
                     Text(LocalizedStringKey(diagnostic.ok ? "牌组列表已更新，可以选择或新建牌组。" : "请打开 Anki，并确认 AnkiConnect 已启用，再刷新连接。"))
                         .font(.caption).foregroundStyle(.secondary)
